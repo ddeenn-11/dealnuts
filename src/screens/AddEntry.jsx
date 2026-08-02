@@ -132,7 +132,7 @@ export default function AddEntry({ onSaved }) {
   const subcategoryOptions = subcategoriesFor(form.category)
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-28 pt-6">
+    <form onSubmit={handleSubmit} className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-36 pt-6">
       <header>
         <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">Buy Right</p>
         <h1 className="font-display text-2xl font-semibold text-ink">Log what you see</h1>
@@ -304,7 +304,7 @@ export default function AddEntry({ onSaved }) {
         />
       </Field>
 
-      <div className="fixed inset-x-0 bottom-24 z-10 mx-auto max-w-md px-4">
+      <div className="fixed inset-x-0 bottom-32 z-10 mx-auto max-w-md px-4">
         <button
           type="submit"
           disabled={saving}

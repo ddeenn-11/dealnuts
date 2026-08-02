@@ -61,6 +61,9 @@ export default function TabBar({ view, onChange }) {
           )
         })}
       </ul>
+      <p className="border-t border-line/60 py-1 text-center text-[10px] text-inkmuted">
+        © 2026 BuyRight. All rights reserved.
+      </p>
     </nav>
   )
 }

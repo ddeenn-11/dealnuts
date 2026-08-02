@@ -82,14 +82,14 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
 
   if (entries.length < 2) {
     return (
-      <div className="mx-auto max-w-md px-4 pb-28 pt-10">
+      <div className="mx-auto max-w-md px-4 pb-36 pt-10">
         <p className="text-center text-sm text-inkmuted">Log at least two finds to compare them side by side.</p>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-32 pt-6">
+    <div className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-40 pt-6">
       <header>
         <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">Decision time</p>
         <h1 className="font-display text-2xl font-semibold text-ink">Compare</h1>

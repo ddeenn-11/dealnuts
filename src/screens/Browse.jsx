@@ -104,7 +104,7 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-32 pt-6">
+    <div className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-40 pt-6">
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">
@@ -232,7 +232,7 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
         <button
           type="button"
           onClick={() => onCompareSelected(selectedIds)}
-          className="fixed bottom-24 left-1/2 z-20 -translate-x-1/2 rounded-full bg-tag px-6 py-3 font-display text-sm font-semibold text-surface shadow-card"
+          className="fixed bottom-32 left-1/2 z-20 -translate-x-1/2 rounded-full bg-tag px-6 py-3 font-display text-sm font-semibold text-surface shadow-card"
         >
           Compare {selectedIds.length} finds
         </button>
