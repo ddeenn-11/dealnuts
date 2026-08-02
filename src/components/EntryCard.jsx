@@ -45,26 +45,21 @@ export default function EntryCard({ entry, onClick, selectable = false, selected
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="truncate font-display text-sm font-semibold text-ink">
-            {entry.brand || 'Unbranded'}
-          </p>
-          <p className="shrink-0 font-mono text-sm font-semibold text-deal">
-            {formatMoney(entry.price, entry.currency)}
-          </p>
-        </div>
-        <p className="truncate text-xs text-inkmuted">
+        <p className="truncate font-display text-sm font-semibold text-ink">
+          {entry.brand || 'Unbranded'}
+        </p>
+        <p className="mt-0.5 font-mono text-sm font-semibold text-deal">
+          {formatMoney(entry.price, entry.currency)}
+        </p>
+        <p className="mt-1 truncate text-xs text-inkmuted">
           {categoryLabel(entry.category || 'other')}
           {entry.subcategory ? ` · ${entry.subcategory}` : ''}
         </p>
         <div className="mt-1 flex items-center gap-2 text-[11px] text-inkmuted">
-          {(entry.storeName || entry.storeNumber) && (
-            <span className="truncate">
-              {[entry.storeName, entry.storeNumber].filter(Boolean).join(' · ')}
-            </span>
-          )}
-          {(entry.storeName || entry.storeNumber) && <span aria-hidden>·</span>}
-          <span className="font-mono">{formatDateTime(entry.dateAdded)}</span>
+          <span className="min-w-0 flex-1 truncate">
+            {[entry.storeName, entry.storeNumber].filter(Boolean).join(' · ') || '—'}
+          </span>
+          <span className="shrink-0 font-mono">{formatDateTime(entry.dateAdded)}</span>
         </div>
       </div>
 
