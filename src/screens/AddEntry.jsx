@@ -2,14 +2,19 @@ import { useEffect, useRef, useState } from 'react'
 import { addEntry } from '../db.js'
 import { getCurrentPosition, reverseGeocode } from '../utils/geolocation.js'
 import { compressImage } from '../utils/image.js'
-import { CATEGORY_OPTIONS } from '../utils/grouping.js'
+import { CATEGORIES, subcategoriesFor } from '../utils/grouping.js'
+import { scanTag } from '../utils/ocr.js'
+import { CURRENCIES, DEFAULT_CURRENCY } from '../utils/currency.js'
 
 const emptyForm = {
   brand: '',
   category: 'clothing',
+  subcategory: '',
   price: '',
+  currency: DEFAULT_CURRENCY,
   description: '',
   storeName: '',
+  storeNumber: '',
 }
 
 export default function AddEntry({ onSaved }) {
@@ -19,7 +24,9 @@ export default function AddEntry({ onSaved }) {
   const [coords, setCoords] = useState(null)
   const [locationStatus, setLocationStatus] = useState('locating') // locating | ok | error
   const [saving, setSaving] = useState(false)
-  const fileInputRef = useRef(null)
+  const [scanning, setScanning] = useState(false)
+  const cameraInputRef = useRef(null)
+  const libraryInputRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
@@ -59,16 +66,39 @@ export default function AddEntry({ onSaved }) {
   async function handlePhotoChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
+    let compressed = file
     try {
-      const compressed = await compressImage(file)
-      setPhotoBlob(compressed)
+      compressed = await compressImage(file)
     } catch {
-      setPhotoBlob(file)
+      // fall back to the original file if resizing failed
+    }
+    setPhotoBlob(compressed)
+    runScan(compressed)
+  }
+
+  async function runScan(blob) {
+    setScanning(true)
+    try {
+      const hints = await scanTag(blob)
+      setForm((f) => ({
+        ...f,
+        brand: f.brand || hints.brand,
+        price: f.price || hints.price,
+        description: f.description || (hints.size ? `Size ${hints.size}` : f.description),
+      }))
+    } catch {
+      // OCR is best-effort — leave fields as-is if it fails
+    } finally {
+      setScanning(false)
     }
   }
 
   function updateField(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
+  }
+
+  function updateCategory(value) {
+    setForm((f) => ({ ...f, category: value, subcategory: '' }))
   }
 
   async function handleSubmit(e) {
@@ -81,53 +111,84 @@ export default function AddEntry({ onSaved }) {
         latitude: coords?.latitude ?? null,
         longitude: coords?.longitude ?? null,
         storeName: form.storeName.trim(),
+        storeNumber: form.storeNumber.trim(),
         brand: form.brand.trim(),
         category: form.category,
+        subcategory: form.subcategory,
         price: form.price === '' ? null : Number(form.price),
+        currency: form.currency,
         description: form.description.trim(),
       })
       setForm(emptyForm)
       setPhotoBlob(null)
-      if (fileInputRef.current) fileInputRef.current.value = ''
+      if (cameraInputRef.current) cameraInputRef.current.value = ''
+      if (libraryInputRef.current) libraryInputRef.current.value = ''
       onSaved?.()
     } finally {
       setSaving(false)
     }
   }
 
+  const subcategoryOptions = subcategoriesFor(form.category)
+
   return (
     <form onSubmit={handleSubmit} className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-28 pt-6">
       <header>
-        <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">New find</p>
+        <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">Buy Right</p>
         <h1 className="font-display text-2xl font-semibold text-ink">Log what you see</h1>
       </header>
 
       <div>
         <input
-          ref={fileInputRef}
+          ref={cameraInputRef}
           type="file"
           accept="image/*"
           capture="environment"
           onChange={handlePhotoChange}
           className="sr-only"
-          id="photo-input"
+          id="camera-input"
         />
-        <label
-          htmlFor="photo-input"
-          className="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line bg-surface text-inkmuted transition-colors hover:border-tag"
-        >
+        <input
+          ref={libraryInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoChange}
+          className="sr-only"
+          id="library-input"
+        />
+
+        <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed border-line bg-surface text-inkmuted">
           {photoPreview ? (
-            <img src={photoPreview} alt="Captured product" className="h-full w-full rounded-[10px] object-cover" />
+            <img src={photoPreview} alt="Captured product" className="h-full w-full object-cover" />
           ) : (
             <>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M4 8a2 2 0 0 1 2-2h1.2a2 2 0 0 0 1.66-.9L9.6 4.1A2 2 0 0 1 11.26 3.2h1.48a2 2 0 0 1 1.66.9l.74 1a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" />
                 <circle cx="12" cy="12.5" r="3.4" />
               </svg>
-              <span className="text-sm font-medium">Take a photo of the item or tag</span>
+              <span className="text-sm font-medium">Add a photo of the item or tag</span>
             </>
           )}
-        </label>
+        </div>
+
+        <div className="mt-2 flex gap-2">
+          <label
+            htmlFor="camera-input"
+            className="flex-1 cursor-pointer rounded-lg border border-line bg-surface py-2.5 text-center text-sm font-medium text-ink transition-colors hover:border-tag hover:text-tag"
+          >
+            Take Photo
+          </label>
+          <label
+            htmlFor="library-input"
+            className="flex-1 cursor-pointer rounded-lg border border-line bg-surface py-2.5 text-center text-sm font-medium text-ink transition-colors hover:border-tag hover:text-tag"
+          >
+            Choose from Library
+          </label>
+        </div>
+
+        {scanning && (
+          <p className="mt-2 text-xs text-inkmuted">Scanning tag for brand, price &amp; size…</p>
+        )}
       </div>
 
       <div className="flex items-center gap-2 text-xs">
@@ -140,19 +201,30 @@ export default function AddEntry({ onSaved }) {
         <span className="text-inkmuted">
           {locationStatus === 'locating' && 'Finding your location…'}
           {locationStatus === 'ok' && 'Location captured'}
-          {locationStatus === 'error' && "Couldn't get your location — you can still add the store name manually."}
+          {locationStatus === 'error' && "Couldn't get your location — you can still add it manually below."}
         </span>
       </div>
 
-      <Field label="Store">
-        <input
-          type="text"
-          value={form.storeName}
-          onChange={(e) => updateField('storeName', e.target.value)}
-          placeholder="e.g. Uniqlo, 5th Ave"
-          className="field-input"
-        />
-      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Location">
+          <input
+            type="text"
+            value={form.storeName}
+            onChange={(e) => updateField('storeName', e.target.value)}
+            placeholder="e.g. 5th Ave, Manhattan"
+            className="field-input"
+          />
+        </Field>
+        <Field label="Store # (optional)">
+          <input
+            type="text"
+            value={form.storeNumber}
+            onChange={(e) => updateField('storeNumber', e.target.value)}
+            placeholder="e.g. Unit 234"
+            className="field-input"
+          />
+        </Field>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <Field label="Brand">
@@ -167,21 +239,48 @@ export default function AddEntry({ onSaved }) {
         <Field label="Category">
           <select
             value={form.category}
-            onChange={(e) => updateField('category', e.target.value)}
-            className="field-input capitalize"
+            onChange={(e) => updateCategory(e.target.value)}
+            className="field-input"
           >
-            {CATEGORY_OPTIONS.map((c) => (
-              <option key={c} value={c} className="capitalize">
-                {c}
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
               </option>
             ))}
           </select>
         </Field>
       </div>
 
+      {subcategoryOptions.length > 0 && (
+        <Field label="Subcategory">
+          <select
+            value={form.subcategory}
+            onChange={(e) => updateField('subcategory', e.target.value)}
+            className="field-input"
+          >
+            <option value="">None</option>
+            {subcategoryOptions.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
+
       <Field label="Price">
-        <div className="relative">
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-inkmuted">$</span>
+        <div className="flex gap-2">
+          <select
+            value={form.currency}
+            onChange={(e) => updateField('currency', e.target.value)}
+            className="field-input w-24 shrink-0 font-mono text-sm"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           <input
             type="number"
             inputMode="decimal"
@@ -190,7 +289,7 @@ export default function AddEntry({ onSaved }) {
             value={form.price}
             onChange={(e) => updateField('price', e.target.value)}
             placeholder="0.00"
-            className="field-input pl-6 font-mono"
+            className="field-input font-mono"
           />
         </div>
       </Field>

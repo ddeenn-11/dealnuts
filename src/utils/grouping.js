@@ -25,14 +25,78 @@ export function autoGroupEntries(entries) {
   return Array.from(map.values()).sort((a, b) => b.entries.length - a.entries.length)
 }
 
-export const CATEGORY_OPTIONS = [
-  'clothing',
-  'shoes',
-  'bags',
-  'accessories',
-  'electronics',
-  'other',
+export const CATEGORIES = [
+  {
+    value: 'clothing',
+    label: 'Clothing',
+    subcategories: ['Tops', 'Bottoms', 'Outerwear', 'Dresses', 'Activewear', 'Other clothing'],
+  },
+  {
+    value: 'shoes',
+    label: 'Shoes',
+    subcategories: ['Sneakers', 'Boots', 'Heels', 'Sandals', 'Flats', 'Other shoes'],
+  },
+  {
+    value: 'bags',
+    label: 'Bags',
+    subcategories: ['Handbags', 'Backpacks', 'Totes', 'Wallets & small goods', 'Other bags'],
+  },
+  {
+    value: 'accessories',
+    label: 'Accessories',
+    subcategories: ['Jewelry', 'Belts', 'Hats', 'Scarves', 'Sunglasses', 'Other accessories'],
+  },
+  {
+    value: 'home',
+    label: 'Home',
+    subcategories: ['Furniture', 'Kitchen & dining', 'Decor', 'Bedding & bath', 'Storage & organization', 'Other home'],
+  },
+  {
+    value: 'beauty',
+    label: 'Beauty',
+    subcategories: ['Skincare', 'Makeup', 'Haircare', 'Fragrance', 'Tools & accessories', 'Other beauty'],
+  },
+  {
+    value: 'outdoors',
+    label: 'Outdoors',
+    subcategories: ['Camping & hiking', 'Sportswear', 'Cycling', 'Water sports', 'Equipment', 'Other outdoors'],
+  },
+  {
+    value: 'electronics',
+    label: 'Electronics',
+    subcategories: ['Audio', 'Wearables', 'Phones & tablets', 'Computers & accessories', 'Cameras', 'Other electronics'],
+  },
+  {
+    value: 'food',
+    label: 'Food',
+    subcategories: ['Snacks', 'Beverages', 'Specialty & gourmet', 'Supplements', 'Other food'],
+  },
+  {
+    value: 'babies',
+    label: 'Babies',
+    subcategories: ['Clothing', 'Toys', 'Feeding', 'Gear', 'Other baby'],
+  },
+  {
+    value: 'entertainment',
+    label: 'Entertainment',
+    subcategories: ['Toys & games', 'Books', 'Collectibles', 'Media', 'Other entertainment'],
+  },
+  {
+    value: 'other',
+    label: 'Other',
+    subcategories: [],
+  },
 ]
+
+export const CATEGORY_OPTIONS = CATEGORIES.map((c) => c.value)
+
+export function categoryLabel(value) {
+  return CATEGORIES.find((c) => c.value === value)?.label || value
+}
+
+export function subcategoriesFor(value) {
+  return CATEGORIES.find((c) => c.value === value)?.subcategories || []
+}
 
 export function formatPrice(price) {
   if (price === '' || price === null || price === undefined) return '—'

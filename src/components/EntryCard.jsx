@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { formatPrice, formatDateTime } from '../utils/grouping.js'
+import { formatDateTime, categoryLabel } from '../utils/grouping.js'
+import { formatMoney } from '../utils/currency.js'
 
 export default function EntryCard({ entry, onClick, selectable = false, selected = false, onToggleSelect }) {
   const [photoUrl, setPhotoUrl] = useState(null)
@@ -49,13 +50,20 @@ export default function EntryCard({ entry, onClick, selectable = false, selected
             {entry.brand || 'Unbranded'}
           </p>
           <p className="shrink-0 font-mono text-sm font-semibold text-deal">
-            ${formatPrice(entry.price)}
+            {formatMoney(entry.price, entry.currency)}
           </p>
         </div>
-        <p className="truncate text-xs capitalize text-inkmuted">{entry.category || 'other'}</p>
+        <p className="truncate text-xs text-inkmuted">
+          {categoryLabel(entry.category || 'other')}
+          {entry.subcategory ? ` · ${entry.subcategory}` : ''}
+        </p>
         <div className="mt-1 flex items-center gap-2 text-[11px] text-inkmuted">
-          {entry.storeName && <span className="truncate">{entry.storeName}</span>}
-          {entry.storeName && <span aria-hidden>·</span>}
+          {(entry.storeName || entry.storeNumber) && (
+            <span className="truncate">
+              {[entry.storeName, entry.storeNumber].filter(Boolean).join(' · ')}
+            </span>
+          )}
+          {(entry.storeName || entry.storeNumber) && <span aria-hidden>·</span>}
           <span className="font-mono">{formatDateTime(entry.dateAdded)}</span>
         </div>
       </div>

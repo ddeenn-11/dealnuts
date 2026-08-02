@@ -1,13 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getAllEntries } from '../db.js'
-import { formatPrice, formatDateTime } from '../utils/grouping.js'
+import { formatDateTime, categoryLabel } from '../utils/grouping.js'
 import { mapLinkFor } from '../utils/geolocation.js'
+import { CURRENCIES, DEFAULT_CURRENCY, formatMoney } from '../utils/currency.js'
+import { fetchRates, convert } from '../utils/fx.js'
 import EntryCard from '../components/EntryCard.jsx'
 
 export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
   const [entries, setEntries] = useState([])
   const [selectedIds, setSelectedIds] = useState(presetIds || [])
   const [loading, setLoading] = useState(true)
+  const [compareCurrency, setCompareCurrency] = useState(DEFAULT_CURRENCY)
+  const [fxData, setFxData] = useState(null)
+  const [fxLoading, setFxLoading] = useState(false)
+  const [fxError, setFxError] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -31,8 +37,43 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
     [selectedIds, entries]
   )
 
+  useEffect(() => {
+    if (selectedEntries.length < 2) return
+    let cancelled = false
+    setFxLoading(true)
+    setFxError(false)
+    fetchRates(compareCurrency)
+      .then((result) => {
+        if (!cancelled) setFxData(result)
+      })
+      .catch(() => {
+        if (!cancelled) setFxError(true)
+      })
+      .finally(() => {
+        if (!cancelled) setFxLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [compareCurrency, selectedEntries.length])
+
+  const otherCurrencies = useMemo(() => {
+    const set = new Set(selectedEntries.map((e) => e.currency || DEFAULT_CURRENCY))
+    set.delete(compareCurrency)
+    return [...set]
+  }, [selectedEntries, compareCurrency])
+
   function toggleSelect(id) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
+
+  function priceInCompareCurrency(entry) {
+    const entryCurrency = entry.currency || DEFAULT_CURRENCY
+    if (entryCurrency === compareCurrency || !fxData || fxError) {
+      return formatMoney(entry.price, entryCurrency)
+    }
+    const converted = convert(entry.price, entryCurrency, fxData.rates)
+    return converted === null ? formatMoney(entry.price, entryCurrency) : formatMoney(converted, compareCurrency)
   }
 
   if (loading) {
@@ -85,6 +126,39 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
             ))}
           </div>
 
+          <div className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-inkmuted">Compare prices in</span>
+              <select
+                value={compareCurrency}
+                onChange={(e) => setCompareCurrency(e.target.value)}
+                className="field-input w-24 py-1.5 text-sm font-mono"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {fxLoading && <p className="text-xs text-inkmuted">Fetching exchange rates…</p>}
+            {fxError && (
+              <p className="text-xs text-tag">Couldn't fetch exchange rates — showing original prices.</p>
+            )}
+            {fxData && !fxError && (
+              <div className="flex flex-col gap-0.5 text-xs text-inkmuted">
+                {otherCurrencies
+                  .filter((c) => fxData.rates[c])
+                  .map((c) => (
+                    <p key={c} className="font-mono">
+                      1 {compareCurrency} = {fxData.rates[c].toFixed(4)} {c}
+                    </p>
+                  ))}
+                <p>Rates as of {fxData.timestamp}</p>
+              </div>
+            )}
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] border-separate border-spacing-0">
               <thead>
@@ -106,19 +180,19 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
                 <CompareRow
                   label="Price"
                   entries={selectedEntries}
-                  render={(e) => `$${formatPrice(e.price)}`}
+                  render={priceInCompareCurrency}
                   mono
                   strong
                 />
                 <CompareRow
                   label="Category"
                   entries={selectedEntries}
-                  render={(e) => e.category || '—'}
-                  capitalize
+                  render={(e) => (e.category ? `${categoryLabel(e.category)}${e.subcategory ? ` · ${e.subcategory}` : ''}` : '—')}
                 />
-                <CompareRow label="Store" entries={selectedEntries} render={(e) => e.storeName || '—'} />
+                <CompareRow label="Location" entries={selectedEntries} render={(e) => e.storeName || '—'} />
+                <CompareRow label="Store #" entries={selectedEntries} render={(e) => e.storeNumber || '—'} />
                 <CompareRow
-                  label="Location"
+                  label="Map"
                   entries={selectedEntries}
                   render={(e) =>
                     e.latitude != null ? (
@@ -159,7 +233,7 @@ function Thumb({ entry }) {
   )
 }
 
-function CompareRow({ label, entries, render, mono = false, strong = false, capitalize = false }) {
+function CompareRow({ label, entries, render, mono = false, strong = false }) {
   return (
     <tr>
       <th className="whitespace-nowrap border-t border-line py-2.5 pr-3 text-left text-xs font-medium text-inkmuted">
@@ -170,7 +244,7 @@ function CompareRow({ label, entries, render, mono = false, strong = false, capi
           key={entry.id}
           className={`whitespace-nowrap border-t border-line py-2.5 pr-4 text-sm text-ink ${
             mono ? 'font-mono' : ''
-          } ${strong ? 'font-semibold text-deal' : ''} ${capitalize ? 'capitalize' : ''}`}
+          } ${strong ? 'font-semibold text-deal' : ''}`}
         >
           {render(entry)}
         </td>

@@ -41,7 +41,7 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
     const q = query.trim().toLowerCase()
     if (!q) return entries
     return entries.filter((e) =>
-      [e.brand, e.category, e.storeName, e.description]
+      [e.brand, e.category, e.subcategory, e.storeName, e.storeNumber, e.description]
         .filter(Boolean)
         .some((field) => field.toLowerCase().includes(q))
     )
