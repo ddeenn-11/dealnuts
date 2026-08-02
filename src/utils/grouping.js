@@ -1,28 +1,55 @@
-// Groups are keyed by category + brand. If brand is blank, entries fall
-// back to a category-only group rather than creating an empty-looking label.
+// Groups are keyed by category + subcategory (brand is not part of the
+// grouping — items within a group can span any number of brands). If
+// subcategory is blank, entries fall back to a category-only group rather
+// than creating an empty-looking label.
 export function groupKeyFor(entry) {
   const category = (entry.category || 'other').trim().toLowerCase()
-  const brand = (entry.brand || '').trim().toLowerCase()
-  return brand ? `${category}__${brand}` : category
+  const subcategory = (entry.subcategory || '').trim().toLowerCase()
+  return subcategory ? `${category}__${subcategory}` : category
 }
 
 export function groupLabelFor(entry) {
   const category = entry.category || 'other'
-  const brand = (entry.brand || '').trim()
-  const prettyCategory = category.charAt(0).toUpperCase() + category.slice(1)
-  return brand ? `${prettyCategory} — ${brand}` : prettyCategory
+  const subcategory = (entry.subcategory || '').trim()
+  const prettyCategory = categoryLabel(category)
+  return subcategory ? `${prettyCategory} — ${subcategory}` : prettyCategory
 }
 
+function categorySortIndex(value) {
+  const idx = CATEGORIES.findIndex((c) => c.value === (value || 'other').toLowerCase())
+  return idx === -1 ? CATEGORIES.length : idx
+}
+
+function subcategorySortIndex(categoryValue, subcategory) {
+  if (!subcategory) return -1
+  const subs = subcategoriesFor(categoryValue)
+  const idx = subs.findIndex((s) => s.toLowerCase() === subcategory.toLowerCase())
+  return idx === -1 ? subs.length : idx
+}
+
+// Groups are ordered by category, then subcategory, following the taxonomy
+// order (not by how many items are in each group). Entries within a group
+// keep whatever order they arrive in — callers pass entries newest-first.
 export function autoGroupEntries(entries) {
   const map = new Map()
   for (const entry of entries) {
     const key = groupKeyFor(entry)
     if (!map.has(key)) {
-      map.set(key, { key, label: groupLabelFor(entry), entries: [] })
+      map.set(key, {
+        key,
+        label: groupLabelFor(entry),
+        category: entry.category || 'other',
+        subcategory: (entry.subcategory || '').trim(),
+        entries: [],
+      })
     }
     map.get(key).entries.push(entry)
   }
-  return Array.from(map.values()).sort((a, b) => b.entries.length - a.entries.length)
+  return Array.from(map.values()).sort((a, b) => {
+    const catDiff = categorySortIndex(a.category) - categorySortIndex(b.category)
+    if (catDiff !== 0) return catDiff
+    return subcategorySortIndex(a.category, a.subcategory) - subcategorySortIndex(b.category, b.subcategory)
+  })
 }
 
 export const CATEGORIES = [

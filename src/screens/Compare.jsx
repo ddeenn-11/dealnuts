@@ -4,11 +4,32 @@ import { formatDateTime, categoryLabel } from '../utils/grouping.js'
 import { mapLinkFor } from '../utils/geolocation.js'
 import { CURRENCIES, DEFAULT_CURRENCY, formatMoney } from '../utils/currency.js'
 import { fetchRates, convert } from '../utils/fx.js'
-import EntryCard from '../components/EntryCard.jsx'
+
+const LAST_COMPARE_KEY = 'buyright-last-compare'
+
+function loadLastCompare() {
+  try {
+    const raw = localStorage.getItem(LAST_COMPARE_KEY)
+    const parsed = raw ? JSON.parse(raw) : []
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function saveLastCompare(ids) {
+  try {
+    localStorage.setItem(LAST_COMPARE_KEY, JSON.stringify(ids))
+  } catch {
+    // ignore storage errors (private mode, quota, etc.) — nothing to persist to
+  }
+}
 
 export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
   const [entries, setEntries] = useState([])
-  const [selectedIds, setSelectedIds] = useState(presetIds || [])
+  const [selectedIds, setSelectedIds] = useState(() =>
+    presetIds && presetIds.length ? presetIds : loadLastCompare()
+  )
   const [loading, setLoading] = useState(true)
   const [compareCurrency, setCompareCurrency] = useState(DEFAULT_CURRENCY)
   const [fxData, setFxData] = useState(null)
@@ -31,6 +52,10 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
   useEffect(() => {
     if (presetIds && presetIds.length) setSelectedIds(presetIds)
   }, [presetIds])
+
+  useEffect(() => {
+    saveLastCompare(selectedIds)
+  }, [selectedIds])
 
   const selectedEntries = useMemo(
     () => selectedIds.map((id) => entries.find((e) => e.id === id)).filter(Boolean),
@@ -69,6 +94,10 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }
 
+  function handleClearAll() {
+    setSelectedIds([])
+  }
+
   function priceInCompareCurrency(entry) {
     const entryCurrency = entry.currency || DEFAULT_CURRENCY
     if (entryCurrency === compareCurrency || !fxData || fxError) {
@@ -82,37 +111,51 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
     return <div className="px-4 pt-10 text-center text-sm text-inkmuted">Loading…</div>
   }
 
-  if (entries.length < 2) {
-    return (
-      <div className="mx-auto max-w-md px-4 pb-36 pt-10">
-        <p className="text-center text-sm text-inkmuted">Log at least two finds to compare them side by side.</p>
-      </div>
-    )
-  }
-
   return (
     <div className="mx-auto flex max-w-md flex-col gap-5 px-4 pb-40 pt-6">
-      <header>
-        <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">Decision time</p>
-        <h1 className="font-display text-2xl font-semibold text-ink">Compare</h1>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wide text-inkmuted">Decision time</p>
+          <h1 className="font-display text-2xl font-semibold text-ink">Compare</h1>
+        </div>
+        {selectedEntries.length > 0 && (
+          <button
+            type="button"
+            onClick={handleClearAll}
+            className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-inkmuted transition-colors hover:border-tag hover:text-tag"
+          >
+            Clear all
+          </button>
+        )}
       </header>
 
-      {selectedEntries.length >= 2 && (
-        <>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {selectedEntries.map((entry) => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => toggleSelect(entry.id)}
-                className="flex shrink-0 items-center gap-1.5 rounded-full border border-tag bg-tag/10 px-3 py-1.5 text-xs font-medium text-tagdark"
-              >
-                {entry.brand || 'Unbranded'}
-                <span aria-hidden>×</span>
-              </button>
-            ))}
-          </div>
+      {selectedEntries.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {selectedEntries.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() => toggleSelect(entry.id)}
+              className="flex shrink-0 items-center gap-1.5 rounded-full border border-tag bg-tag/10 px-3 py-1.5 text-xs font-medium text-tagdark"
+            >
+              {entry.brand || 'Unbranded'}
+              <span aria-hidden>×</span>
+            </button>
+          ))}
+        </div>
+      )}
 
+      {selectedEntries.length < 2 ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line py-14 text-center">
+          <p className="font-display text-lg font-semibold text-ink">
+            {selectedEntries.length === 0 ? 'Nothing to compare yet' : 'Add one more to compare'}
+          </p>
+          <p className="max-w-[26ch] text-sm text-inkmuted">
+            Go to Finds, tap items to select them, then tap "Compare" once you have two or more.
+          </p>
+        </div>
+      ) : (
+        <>
           <div className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-3">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-medium text-inkmuted">Compare prices in</span>
@@ -211,21 +254,6 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
           </div>
         </>
       )}
-
-      <div className="flex flex-col gap-2">
-        <p className="text-sm text-inkmuted">
-          {selectedEntries.length < 2 ? 'Pick two or more finds to compare.' : 'Add another find to compare'}
-        </p>
-        {entries.map((entry) => (
-          <EntryCard
-            key={entry.id}
-            entry={entry}
-            selectable
-            selected={selectedIds.includes(entry.id)}
-            onToggleSelect={toggleSelect}
-          />
-        ))}
-      </div>
     </div>
   )
 }

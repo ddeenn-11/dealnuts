@@ -17,7 +17,6 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState('auto') // 'auto' | 'manual'
-  const [selecting, setSelecting] = useState(false)
   const [selectedIds, setSelectedIds] = useState([])
   const [groupPickerFor, setGroupPickerFor] = useState(null) // entry id, or null
 
@@ -62,9 +61,14 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }
 
-  function exitSelectMode() {
-    setSelecting(false)
+  function clearSelection() {
     setSelectedIds([])
+  }
+
+  function handleEdit() {
+    if (selectedIds.length !== 1) return
+    onOpenEntry(selectedIds[0])
+    clearSelection()
   }
 
   async function handleBulkDelete() {
@@ -73,7 +77,7 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
     if (!window.confirm(`Delete ${label}? This can't be undone.`)) return
     await Promise.all(selectedIds.map((id) => deleteEntry(id)))
     setEntries((prev) => prev.filter((e) => !selectedIds.includes(e.id)))
-    exitSelectMode()
+    clearSelection()
   }
 
   async function handleExport() {
@@ -156,23 +160,20 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
             <div className="flex shrink-0 gap-2">
               <button
                 type="button"
-                onClick={() => (selecting ? exitSelectMode() : setSelecting(true))}
-                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                  selecting ? 'border-tag text-tag' : 'border-line text-inkmuted hover:border-tag hover:text-tag'
-                }`}
+                onClick={handleEdit}
+                disabled={selectedIds.length !== 1}
+                className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-inkmuted transition-colors hover:border-tag hover:text-tag disabled:opacity-40"
               >
-                {selecting ? 'Cancel' : 'Select'}
+                Edit
               </button>
-              {selecting && (
-                <button
-                  type="button"
-                  onClick={handleBulkDelete}
-                  disabled={selectedIds.length === 0}
-                  className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-inkmuted transition-colors hover:border-tag hover:text-tag disabled:opacity-40"
-                >
-                  Delete{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleBulkDelete}
+                disabled={selectedIds.length === 0}
+                className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-inkmuted transition-colors hover:border-tag hover:text-tag disabled:opacity-40"
+              >
+                Delete{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
+              </button>
             </div>
           </div>
 
@@ -185,10 +186,8 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
                     <EntryWithGroupPicker
                       key={entry.id}
                       entry={entry}
-                      selecting={selecting}
                       selected={selectedIds.includes(entry.id)}
                       onToggleSelect={toggleSelect}
-                      onOpen={onOpenEntry}
                       groups={groups}
                       pickerOpen={groupPickerFor === entry.id}
                       onOpenPicker={() => setGroupPickerFor(entry.id)}
@@ -226,8 +225,7 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
                           <div className="flex-1">
                             <EntryCard
                               entry={entry}
-                              onClick={onOpenEntry}
-                              selectable={selecting}
+                              selectable
                               selected={selectedIds.includes(entry.id)}
                               onToggleSelect={toggleSelect}
                             />
@@ -250,7 +248,7 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
         </>
       )}
 
-      {selecting && selectedIds.length >= 2 && (
+      {selectedIds.length >= 2 && (
         <button
           type="button"
           onClick={() => onCompareSelected(selectedIds)}
@@ -265,10 +263,8 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
 
 function EntryWithGroupPicker({
   entry,
-  selecting,
   selected,
   onToggleSelect,
-  onOpen,
   groups,
   pickerOpen,
   onOpenPicker,
@@ -279,23 +275,15 @@ function EntryWithGroupPicker({
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center gap-2">
         <div className="flex-1">
-          <EntryCard
-            entry={entry}
-            onClick={onOpen}
-            selectable={selecting}
-            selected={selected}
-            onToggleSelect={onToggleSelect}
-          />
+          <EntryCard entry={entry} selectable selected={selected} onToggleSelect={onToggleSelect} />
         </div>
-        {!selecting && (
-          <button
-            type="button"
-            onClick={() => (pickerOpen ? onClosePicker() : onOpenPicker())}
-            className="shrink-0 text-xs text-inkmuted underline decoration-dotted"
-          >
-            + Group
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => (pickerOpen ? onClosePicker() : onOpenPicker())}
+          className="shrink-0 text-xs text-inkmuted underline decoration-dotted"
+        >
+          + Group
+        </button>
       </div>
       {pickerOpen && (
         <div className="ml-1 flex flex-wrap gap-1.5 rounded-lg border border-line bg-surface p-2">
