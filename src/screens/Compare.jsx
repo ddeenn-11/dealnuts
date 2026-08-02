@@ -37,6 +37,8 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
     [selectedIds, entries]
   )
 
+  const fitsWithoutScroll = selectedEntries.length <= 2
+
   useEffect(() => {
     if (selectedEntries.length < 2) return
     let cancelled = false
@@ -95,21 +97,6 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
         <h1 className="font-display text-2xl font-semibold text-ink">Compare</h1>
       </header>
 
-      {selectedEntries.length < 2 && (
-        <div className="flex flex-col gap-2">
-          <p className="text-sm text-inkmuted">Pick two or more finds to compare.</p>
-          {entries.map((entry) => (
-            <EntryCard
-              key={entry.id}
-              entry={entry}
-              selectable
-              selected={selectedIds.includes(entry.id)}
-              onToggleSelect={toggleSelect}
-            />
-          ))}
-        </div>
-      )}
-
       {selectedEntries.length >= 2 && (
         <>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -160,15 +147,23 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] border-separate border-spacing-0">
+            <table
+              className={`border-separate border-spacing-0 ${
+                fitsWithoutScroll ? 'w-full table-fixed' : 'min-w-[560px]'
+              }`}
+            >
               <thead>
                 <tr>
-                  <th className="w-24" />
+                  <th className="w-16" />
                   {selectedEntries.map((entry) => (
                     <th key={entry.id} className="pb-2 text-left align-bottom">
-                      <button type="button" onClick={() => onOpenEntry(entry.id)} className="block w-40">
-                        <Thumb entry={entry} />
-                        <span className="mt-1.5 block font-display text-sm font-semibold text-ink">
+                      <button
+                        type="button"
+                        onClick={() => onOpenEntry(entry.id)}
+                        className={fitsWithoutScroll ? 'block w-full' : 'block w-32'}
+                      >
+                        <Thumb entry={entry} compact={fitsWithoutScroll} />
+                        <span className="mt-1.5 block truncate font-display text-sm font-semibold text-ink">
                           {entry.brand || 'Unbranded'}
                         </span>
                       </button>
@@ -216,14 +211,33 @@ export default function Compare({ refreshKey, presetIds, onOpenEntry }) {
           </div>
         </>
       )}
+
+      <div className="flex flex-col gap-2">
+        <p className="text-sm text-inkmuted">
+          {selectedEntries.length < 2 ? 'Pick two or more finds to compare.' : 'Add another find to compare'}
+        </p>
+        {entries.map((entry) => (
+          <EntryCard
+            key={entry.id}
+            entry={entry}
+            selectable
+            selected={selectedIds.includes(entry.id)}
+            onToggleSelect={toggleSelect}
+          />
+        ))}
+      </div>
     </div>
   )
 }
 
-function Thumb({ entry }) {
+function Thumb({ entry, compact }) {
   const url = entry.photo ? URL.createObjectURL(entry.photo) : null
   return (
-    <span className="tag-card block aspect-square w-40 overflow-hidden border border-line bg-surface">
+    <span
+      className={`tag-card block aspect-square overflow-hidden border border-line bg-surface ${
+        compact ? 'w-full' : 'w-32'
+      }`}
+    >
       {url ? (
         <img src={url} alt="" className="h-full w-full object-cover" />
       ) : (
@@ -236,13 +250,13 @@ function Thumb({ entry }) {
 function CompareRow({ label, entries, render, mono = false, strong = false }) {
   return (
     <tr>
-      <th className="whitespace-nowrap border-t border-line py-2.5 pr-3 text-left text-xs font-medium text-inkmuted">
+      <th className="border-t border-line py-2.5 pr-2 text-left text-xs font-medium text-inkmuted">
         {label}
       </th>
       {entries.map((entry) => (
         <td
           key={entry.id}
-          className={`whitespace-nowrap border-t border-line py-2.5 pr-4 text-sm text-ink ${
+          className={`truncate border-t border-line py-2.5 pr-3 text-sm text-ink ${
             mono ? 'font-mono' : ''
           } ${strong ? 'font-semibold text-deal' : ''}`}
         >

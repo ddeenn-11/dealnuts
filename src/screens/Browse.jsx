@@ -7,6 +7,7 @@ import {
   addEntryToGroup,
   removeEntryFromGroup,
   exportAllAsJson,
+  deleteEntry,
 } from '../db.js'
 import { autoGroupEntries } from '../utils/grouping.js'
 
@@ -64,6 +65,15 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
   function exitSelectMode() {
     setSelecting(false)
     setSelectedIds([])
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return
+    const label = selectedIds.length === 1 ? 'this find' : `these ${selectedIds.length} finds`
+    if (!window.confirm(`Delete ${label}? This can't be undone.`)) return
+    await Promise.all(selectedIds.map((id) => deleteEntry(id)))
+    setEntries((prev) => prev.filter((e) => !selectedIds.includes(e.id)))
+    exitSelectMode()
   }
 
   async function handleExport() {
@@ -143,15 +153,27 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
               </ModeButton>
             </div>
 
-            <button
-              type="button"
-              onClick={() => (selecting ? exitSelectMode() : setSelecting(true))}
-              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                selecting ? 'border-tag text-tag' : 'border-line text-inkmuted hover:border-tag hover:text-tag'
-              }`}
-            >
-              {selecting ? 'Cancel' : 'Select'}
-            </button>
+            <div className="flex shrink-0 gap-2">
+              <button
+                type="button"
+                onClick={() => (selecting ? exitSelectMode() : setSelecting(true))}
+                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  selecting ? 'border-tag text-tag' : 'border-line text-inkmuted hover:border-tag hover:text-tag'
+                }`}
+              >
+                {selecting ? 'Cancel' : 'Select'}
+              </button>
+              {selecting && (
+                <button
+                  type="button"
+                  onClick={handleBulkDelete}
+                  disabled={selectedIds.length === 0}
+                  className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-inkmuted transition-colors hover:border-tag hover:text-tag disabled:opacity-40"
+                >
+                  Delete{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
+                </button>
+              )}
+            </div>
           </div>
 
           {mode === 'auto' &&
