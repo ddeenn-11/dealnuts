@@ -17,21 +17,30 @@ function getWorker() {
   return workerPromise
 }
 
-const SIZE_TOKEN = /\b(XXS|XS|S|M|L|XL|XXL|XXXL|[0-9]{1,2}(?:\.5)?)\b/i
+const SIZE_WORD_TOKEN = /\b(XXS|XS|S|M|L|XL|XXL|XXXL)\b/i
+// A bare 1-2 digit number is only accepted as a size when it's not part of
+// something else that also looks like a short number: a thousands-grouped
+// price ("1,080"), a decimal price ("12.99"), or another digit run (a
+// barcode fragment). The lookahead blocks a match that's immediately
+// followed by ",digit" or ".digit" — a real half-size like "9.5" is still
+// fine, since nothing follows the ".5".
+const SIZE_NUMBER_TOKEN = /\b([0-9]{1,2}(?:\.5)?)\b(?![,.]\s?[0-9])/
 
 // Ordered most-specific-first: an explicit currency mark wins over a bare
 // decimal number, since tags often print a second unrelated decimal (a SKU
-// fragment, a size like "10.5") that isn't the price.
+// fragment, a size like "10.5") that isn't the price. Decimals are
+// optional throughout — plenty of real tags print whole-number prices
+// ("HK$1,080") with no cents.
 const PRICE_PATTERNS = [
-  /(?:US\$|HK\$|R\$|C\$|A\$|NT\$|\$|£|€|¥)\s?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)/, // $12.99, HK$1,299
-  /\bS\s?([0-9]{1,3}(?:,[0-9]{3})*\.[0-9]{2})\b/, // OCR often misreads "$" as "S"
-  /\b([0-9]{1,3}(?:,[0-9]{3})*\.[0-9]{2})\s?(?:USD|HKD|EUR|GBP|CNY|RMB|JPY)\b/i, // "29.99 USD"
-  /\b([0-9]{1,3}(?:,[0-9]{3})*\.[0-9]{2})\b/, // bare decimal fallback — requires exactly 2 decimals, so it won't grab a "9.5" size
+  /(?:US\$|HK\$|R\$|C\$|A\$|NT\$|NZ\$|S\$|\$|£|€|¥|₩|฿)\s?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)/, // $12.99, HK$1,299, HK$1,080
+  /\bS\s?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)\b/, // OCR often misreads "$" as "S"
+  /\b([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)\s?(?:USD|HKD|EUR|GBP|CNY|RMB|JPY|KRW|TWD|THB|SGD|CAD|AUD|NZD|CHF)\b/i, // "29.99 USD", "1080 HKD"
+  /\b([0-9]{1,3}(?:,[0-9]{3})*\.[0-9]{2})\b/, // bare decimal fallback — requires exactly 2 decimals (no currency marker anywhere else), so it won't grab a "9.5" size or a bare SKU number
 ]
 
 // Any of the above, used to exclude price-looking lines from brand
 // candidates below.
-const PRICE_TOKEN = /(?:[$£€¥]|USD|HKD|EUR|GBP|CNY|RMB|JPY)\s?[0-9]|[0-9](?:\.[0-9]{2})\b/i
+const PRICE_TOKEN = /(?:[$£€¥₩฿]|USD|HKD|EUR|GBP|CNY|RMB|JPY|KRW|TWD|THB|SGD|CAD|AUD|NZD|CHF)\s?[0-9]|[0-9](?:\.[0-9]{2})\b|[0-9](?:,[0-9]{3})\b/i
 
 function guessPrice(text) {
   for (const pattern of PRICE_PATTERNS) {
@@ -41,9 +50,29 @@ function guessPrice(text) {
   return ''
 }
 
+// A bare number is a weak, easily-confused signal (list markers, barcode
+// fragments, an unrelated number in a title) — an explicit size word is
+// checked first, across the whole text, regardless of where it sits.
+// Only if nothing like that exists do we fall back to a numeric candidate,
+// and only from lines that aren't themselves a numbered list item
+// ("1. This shirt's destination?"), a price (already handled by
+// PRICE_TOKEN, reused here so a price line's own digits aren't grabbed), or
+// a barcode/SKU digit run (e.g. "1 93659 43142 1" — all digits and
+// whitespace, way more of them than any real size uses).
 function guessSize(text) {
-  const match = text.match(SIZE_TOKEN)
-  return match ? match[1].toUpperCase() : ''
+  const wordMatch = text.match(SIZE_WORD_TOKEN)
+  if (wordMatch) return wordMatch[1].toUpperCase()
+
+  for (const line of text.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    if (/^[0-9]{1,2}[.)]\s/.test(trimmed)) continue
+    if (PRICE_TOKEN.test(trimmed)) continue
+    if (/^[0-9\s]+$/.test(trimmed) && trimmed.replace(/\s/g, '').length > 3) continue
+    const match = trimmed.match(SIZE_NUMBER_TOKEN)
+    if (match) return match[1].toUpperCase()
+  }
+  return ''
 }
 
 // Brand names occasionally end in a digit (Dsquared2, G2000, Y-3) — the

@@ -62,26 +62,44 @@ async function embedBlob(model, blob) {
 
 // A confidence floor below which a "best match" isn't worth surfacing — the
 // reference set is small, so *something* is always the closest match even
-// when the photo isn't any of these brands at all.
-const MIN_CONFIDENCE = 0.55
+// when the photo isn't any of these brands at all. In practice this floor
+// alone isn't enough: a query photo that's mostly background/tag rather
+// than a clean logo (e.g. a whole price tag photographed at once, logo
+// tiny in-frame) can clear 0.55-0.7 confidence against the WRONG reference
+// logo just as easily as a real match, because "confidence" here is really
+// just "how close is the nearest neighbor", which is always something.
+const MIN_CONFIDENCE = 0.7
+
+// A real match should stand out clearly from the second-best candidate —
+// when the photo doesn't actually contain any of the reference logos, the
+// top few scores tend to bunch close together (nothing is a good fit, so
+// several mediocre fits tie for "least bad"). Requiring a wide gap between
+// #1 and #2 filters out exactly that case, which the confidence floor alone
+// does not.
+const MIN_MARGIN = 0.1
 
 // Returns { brand, confidence } for the best-matching reference logo, or
-// null if nothing clears the confidence floor. brand is the human-readable
-// display name (e.g. "Nike"), not the internal slug.
+// null if nothing clears the confidence floor and margin. brand is the
+// human-readable display name (e.g. "Nike"), not the internal slug.
 export async function matchLogo(blob) {
   const [model, references] = await Promise.all([getModel(), getReferenceEmbeddings()])
   const queryEmbedding = await embedBlob(model, blob)
 
   let best = null
   let bestScore = -Infinity
+  let secondScore = -Infinity
   for (const ref of references) {
     const score = cosineSimilarity(queryEmbedding, ref.embedding)
     if (score > bestScore) {
+      secondScore = bestScore
       bestScore = score
       best = ref
+    } else if (score > secondScore) {
+      secondScore = score
     }
   }
 
   if (!best || bestScore < MIN_CONFIDENCE) return null
+  if (bestScore - secondScore < MIN_MARGIN) return null
   return { brand: best.display, confidence: bestScore }
 }
