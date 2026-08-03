@@ -25,6 +25,7 @@ export default function AddEntry({ onSaved }) {
   const [locationStatus, setLocationStatus] = useState('locating') // locating | ok | error
   const [saving, setSaving] = useState(false)
   const [scanning, setScanning] = useState(false)
+  const [categoryTouched, setCategoryTouched] = useState(false)
   const cameraInputRef = useRef(null)
   const libraryInputRef = useRef(null)
 
@@ -80,11 +81,18 @@ export default function AddEntry({ onSaved }) {
     setScanning(true)
     try {
       const hints = await scanTag(blob)
+      const descriptionHints = [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`]
+        .filter(Boolean)
+        .join(', ')
       setForm((f) => ({
         ...f,
         brand: f.brand || hints.brand,
         price: f.price || hints.price,
-        description: f.description || (hints.size ? `Size ${hints.size}` : f.description),
+        // Only apply the category guess if the user hasn't picked one
+        // themselves yet — never override a manual choice.
+        category: !categoryTouched && hints.category ? hints.category : f.category,
+        subcategory: !categoryTouched && hints.category ? hints.subcategory : f.subcategory,
+        description: f.description || descriptionHints || f.description,
       }))
     } catch {
       // OCR is best-effort — leave fields as-is if it fails
@@ -98,6 +106,7 @@ export default function AddEntry({ onSaved }) {
   }
 
   function updateCategory(value) {
+    setCategoryTouched(true)
     setForm((f) => ({ ...f, category: value, subcategory: '' }))
   }
 
@@ -121,6 +130,7 @@ export default function AddEntry({ onSaved }) {
       })
       setForm(emptyForm)
       setPhotoBlob(null)
+      setCategoryTouched(false)
       if (cameraInputRef.current) cameraInputRef.current.value = ''
       if (libraryInputRef.current) libraryInputRef.current.value = ''
       onSaved?.()
@@ -187,7 +197,7 @@ export default function AddEntry({ onSaved }) {
         </div>
 
         {scanning && (
-          <p className="mt-2 text-xs text-inkmuted">Scanning tag for brand, price &amp; size…</p>
+          <p className="mt-2 text-xs text-inkmuted">Scanning tag for brand, price, category &amp; color…</p>
         )}
       </div>
 

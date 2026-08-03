@@ -1,0 +1,1218 @@
+{
+  "gucci": {
+    "display": "Gucci",
+    "status": "ok",
+    "qid": "Q178516",
+    "commons_file": "Gucci logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/gucci.png",
+    "bytes": 10257
+  },
+  "prada": {
+    "display": "Prada",
+    "status": "ok",
+    "qid": "Q193136",
+    "commons_file": "Prada-Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/prada.png",
+    "bytes": 3297
+  },
+  "miu_miu": {
+    "display": "Miu Miu",
+    "status": "ok",
+    "qid": "Q552230",
+    "commons_file": "Miu Miu - logo (Italy, 1993).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/miu_miu.png",
+    "bytes": 2047
+  },
+  "balenciaga": {
+    "display": "Balenciaga",
+    "status": "ok",
+    "qid": "Q1530892",
+    "commons_file": "Balenciaga Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/balenciaga.png",
+    "bytes": 3881
+  },
+  "bottega_veneta": {
+    "display": "Bottega Veneta",
+    "status": "ok",
+    "qid": "Q894874",
+    "commons_file": "Logo of Bottega Veneta.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/bottega_veneta.png",
+    "bytes": 3450
+  },
+  "saint_laurent": {
+    "display": "Saint Laurent",
+    "status": "ok",
+    "qid": "Q2282172",
+    "commons_file": "Logo of Yves Saint Laurent SAS.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/saint_laurent.png",
+    "bytes": 3949
+  },
+  "celine": {
+    "display": "Celine",
+    "status": "ok",
+    "qid": "Q948531",
+    "commons_file": "Celine logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/celine.png",
+    "bytes": 2520
+  },
+  "loewe": {
+    "display": "Loewe",
+    "status": "ok",
+    "qid": "Q966905",
+    "commons_file": "Loewe logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/loewe.png",
+    "bytes": 4488
+  },
+  "fendi": {
+    "display": "Fendi",
+    "status": "ok",
+    "qid": "Q926575",
+    "commons_file": "Fendi logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/fendi.png",
+    "bytes": 3374
+  },
+  "burberry": {
+    "display": "Burberry",
+    "status": "ok",
+    "qid": "Q390107",
+    "commons_file": "Burberry Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/burberry.png",
+    "bytes": 3113
+  },
+  "chloe": {
+    "display": "Chloé",
+    "status": "ok",
+    "qid": "Q1075391",
+    "commons_file": "Chloe 2024 Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/chloe.png",
+    "bytes": 6530
+  },
+  "givenchy": {
+    "display": "Givenchy",
+    "status": "ok",
+    "qid": "Q759210",
+    "commons_file": "Givenchy - wordmark (France, 2003).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/givenchy.png",
+    "bytes": 2904
+  },
+  "alexander_mcqueen": {
+    "display": "Alexander McQueen",
+    "status": "ok",
+    "qid": "Q13882231",
+    "commons_file": "Logo of Alexander McQueen.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/alexander_mcqueen.png",
+    "bytes": 13008
+  },
+  "marni": {
+    "display": "Marni",
+    "status": "ok",
+    "qid": "Q3650853",
+    "commons_file": "Marni logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/marni.png",
+    "bytes": 1542
+  },
+  "versace": {
+    "display": "Versace",
+    "status": "ok",
+    "qid": "Q696376",
+    "commons_file": "Versace old logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/versace.png",
+    "bytes": 4769
+  },
+  "dolce_gabbana": {
+    "display": "Dolce & Gabbana",
+    "status": "ok",
+    "qid": "Q214480",
+    "commons_file": "Dolce & Gabbana - logo (Italy, 1985-).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/dolce_gabbana.png",
+    "bytes": 4107
+  },
+  "armani": {
+    "display": "Armani",
+    "status": "ok",
+    "qid": "Q635484",
+    "commons_file": "Giorgio Armani.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/armani.png",
+    "bytes": 4517
+  },
+  "dsquared2": {
+    "display": "Dsquared2",
+    "status": "ok",
+    "qid": "Q2551058",
+    "commons_file": "DSQUARED2.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/dsquared2.png",
+    "bytes": 4676
+  },
+  "moncler": {
+    "display": "Moncler",
+    "status": "ok",
+    "qid": "Q1548951",
+    "commons_file": "Logo Moncler Group.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/moncler.png",
+    "bytes": 4857
+  },
+  "off_white": {
+    "display": "Off-White",
+    "status": "ok",
+    "qid": "Q53472173",
+    "commons_file": "Off-White Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/off_white.png",
+    "bytes": 3726
+  },
+  "ami_paris": {
+    "display": "Ami Paris",
+    "status": "ok",
+    "qid": "Q107394262",
+    "commons_file": "Ami Paris.jpg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/ami_paris.png",
+    "bytes": 6488
+  },
+  "jil_sander": {
+    "display": "Jil Sander",
+    "status": "ok",
+    "qid": "Q17101930",
+    "commons_file": "Jil Sander logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/jil_sander.png",
+    "bytes": 2873
+  },
+  "maison_margiela": {
+    "display": "Maison Margiela",
+    "status": "ok",
+    "qid": "Q1726925",
+    "commons_file": "Maison Margiela logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/maison_margiela.png",
+    "bytes": 5672
+  },
+  "acne_studios": {
+    "display": "Acne Studios",
+    "status": "ok",
+    "qid": "Q3277165",
+    "commons_file": "Acne Studios Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/acne_studios.png",
+    "bytes": 3611
+  },
+  "zegna": {
+    "display": "Zegna",
+    "status": "ok",
+    "qid": "Q1355904",
+    "commons_file": "Ermenegildo Zegna group - logo (Italy).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/zegna.png",
+    "bytes": 4511
+  },
+  "loro_piana": {
+    "display": "Loro Piana",
+    "status": "ok",
+    "qid": "Q1686544",
+    "commons_file": "Loro Piana logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/loro_piana.png",
+    "bytes": 7784
+  },
+  "kenzo": {
+    "display": "Kenzo",
+    "status": "ok",
+    "qid": "Q895795",
+    "commons_file": "Kenzo logo.jpeg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/kenzo.png",
+    "bytes": 4866
+  },
+  "tory_burch": {
+    "display": "Tory Burch",
+    "status": "ok",
+    "qid": "Q19988222",
+    "commons_file": "Tory Burch logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tory_burch.png",
+    "bytes": 4170
+  },
+  "michael_kors": {
+    "display": "Michael Kors",
+    "status": "ok",
+    "qid": "Q19572998",
+    "commons_file": "Capri Holdings Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/michael_kors.png",
+    "bytes": 5580
+  },
+  "kate_spade": {
+    "display": "Kate Spade New York",
+    "status": "ok",
+    "qid": "Q6375797",
+    "commons_file": "Kate Spade New York logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/kate_spade.png",
+    "bytes": 6629
+  },
+  "coach": {
+    "display": "Coach",
+    "status": "ok",
+    "qid": "Q727697",
+    "commons_file": "Coach New Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/coach.png",
+    "bytes": 4204
+  },
+  "longchamp": {
+    "display": "Longchamp",
+    "status": "ok",
+    "qid": "Q1869471",
+    "commons_file": "Longchamp logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/longchamp.png",
+    "bytes": 3105
+  },
+  "furla": {
+    "display": "Furla",
+    "status": "ok",
+    "qid": "Q3073195",
+    "commons_file": "Furla logo 2019.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/furla.png",
+    "bytes": 2678
+  },
+  "tods": {
+    "display": "Tod's",
+    "status": "ok",
+    "qid": "Q1342350",
+    "commons_file": "Tods.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tods.png",
+    "bytes": 4970
+  },
+  "ferragamo": {
+    "display": "Ferragamo",
+    "status": "ok",
+    "qid": "Q3946053",
+    "commons_file": "Fergamo - logo (Italy, 2022).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/ferragamo.png",
+    "bytes": 3958
+  },
+  "jimmy_choo": {
+    "display": "Jimmy Choo",
+    "status": "ok",
+    "qid": "Q5213855",
+    "commons_file": "Jimmy Choo wordmark.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/jimmy_choo.png",
+    "bytes": 4092
+  },
+  "bally": {
+    "display": "Bally",
+    "status": "ok",
+    "qid": "Q688195",
+    "commons_file": "Bally Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/bally.png",
+    "bytes": 2800
+  },
+  "nike": {
+    "display": "Nike",
+    "status": "ok",
+    "qid": "Q483915",
+    "commons_file": "Logo NIKE.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/nike.png",
+    "bytes": 2596
+  },
+  "adidas": {
+    "display": "Adidas",
+    "status": "ok",
+    "qid": "Q3895",
+    "commons_file": "Adidas 2022 logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/adidas.png",
+    "bytes": 3751
+  },
+  "puma": {
+    "display": "Puma",
+    "status": "ok",
+    "qid": "Q157064",
+    "commons_file": "Puma-logo-(text).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/puma.png",
+    "bytes": 1482
+  },
+  "under_armour": {
+    "display": "Under Armour",
+    "status": "ok",
+    "qid": "Q2031485",
+    "commons_file": "Under armour logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/under_armour.png",
+    "bytes": 6052
+  },
+  "new_balance": {
+    "display": "New Balance",
+    "status": "ok",
+    "qid": "Q742988",
+    "commons_file": "New Balance logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/new_balance.png",
+    "bytes": 13839
+  },
+  "asics": {
+    "display": "Asics",
+    "status": "ok",
+    "qid": "Q327247",
+    "commons_file": "Asics Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/asics.png",
+    "bytes": 5045
+  },
+  "skechers": {
+    "display": "Skechers",
+    "status": "ok",
+    "qid": "Q2945643",
+    "commons_file": "Skechers.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/skechers.png",
+    "bytes": 11208
+  },
+  "converse": {
+    "display": "Converse",
+    "status": "ok",
+    "qid": "Q319515",
+    "commons_file": "Converse logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/converse.png",
+    "bytes": 5952
+  },
+  "lululemon": {
+    "display": "Lululemon",
+    "status": "ok",
+    "qid": "Q6702957",
+    "commons_file": "Lululemon Athletica logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/lululemon.png",
+    "bytes": 15589
+  },
+  "the_north_face": {
+    "display": "The North Face",
+    "status": "ok",
+    "qid": "Q152784",
+    "commons_file": "TheNorthFace logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/the_north_face.png",
+    "bytes": 4486
+  },
+  "columbia_sportswear": {
+    "display": "Columbia Sportswear",
+    "status": "ok",
+    "qid": "Q1112588",
+    "commons_file": "Columbia Sportswear Co logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/columbia_sportswear.png",
+    "bytes": 8966
+  },
+  "timberland": {
+    "display": "Timberland",
+    "status": "ok",
+    "qid": "Q1539185",
+    "commons_file": "Timberland-logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/timberland.png",
+    "bytes": 15492
+  },
+  "salomon": {
+    "display": "Salomon",
+    "status": "ok",
+    "qid": "Q2120822",
+    "commons_file": "Salomon logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/salomon.png",
+    "bytes": 8185
+  },
+  "lacoste": {
+    "display": "Lacoste",
+    "status": "ok",
+    "qid": "Q309031",
+    "commons_file": "Lacoste wordmark 2011.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/lacoste.png",
+    "bytes": 3223
+  },
+  "ugg": {
+    "display": "Ugg",
+    "status": "ok",
+    "qid": "Q1138480",
+    "commons_file": "UGG Australia logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/ugg.png",
+    "bytes": 8867
+  },
+  "gap": {
+    "display": "Gap",
+    "status": "ok",
+    "qid": "Q420822",
+    "commons_file": "New Gap logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/gap.png",
+    "bytes": 4165
+  },
+  "banana_republic": {
+    "display": "Banana Republic",
+    "status": "ok",
+    "qid": "Q806085",
+    "commons_file": "Banana Republic.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/banana_republic.png",
+    "bytes": 3735
+  },
+  "levis": {
+    "display": "Levi's",
+    "status": "ok",
+    "qid": "Q127962",
+    "commons_file": "Levi's logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/levis.png",
+    "bytes": 10045
+  },
+  "calvin_klein": {
+    "display": "Calvin Klein",
+    "status": "ok",
+    "qid": "Q1068628",
+    "commons_file": "Calvin klein logo old.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/calvin_klein.png",
+    "bytes": 4060
+  },
+  "tommy_hilfiger": {
+    "display": "Tommy Hilfiger",
+    "status": "ok",
+    "qid": "Q634881",
+    "commons_file": "Tommy hilfig vectorlogo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tommy_hilfiger.png",
+    "bytes": 2435
+  },
+  "polo_ralph_lauren": {
+    "display": "Polo Ralph Lauren",
+    "status": "ok",
+    "qid": "Q1641437",
+    "commons_file": "Ralph Lauren logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/polo_ralph_lauren.png",
+    "bytes": 2510
+  },
+  "woolrich": {
+    "display": "Woolrich",
+    "status": "ok",
+    "qid": "Q2593287",
+    "commons_file": "Woolrich, Inc logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/woolrich.png",
+    "bytes": 5775
+  },
+  "maxmara": {
+    "display": "MaxMara",
+    "status": "ok",
+    "qid": "Q1151774",
+    "commons_file": "Max Mara logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/maxmara.png",
+    "bytes": 5228
+  },
+  "etro": {
+    "display": "Etro",
+    "status": "ok",
+    "qid": "Q1371677",
+    "commons_file": "Logo Etro.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/etro.png",
+    "bytes": 1125
+  },
+  "cp_company": {
+    "display": "C.P. Company",
+    "status": "ok",
+    "qid": "Q429204",
+    "commons_file": "C.P. Company logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/cp_company.png",
+    "bytes": 7911
+  },
+  "stone_island": {
+    "display": "Stone Island",
+    "status": "ok",
+    "qid": "Q950042",
+    "commons_file": "Stone-Island-Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/stone_island.png",
+    "bytes": 5531
+  },
+  "replay": {
+    "display": "Replay",
+    "status": "ok",
+    "qid": "Q1654538",
+    "commons_file": "Replay logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/replay.png",
+    "bytes": 4337
+  },
+  "tag_heuer": {
+    "display": "Tag Heuer",
+    "status": "ok",
+    "qid": "Q645984",
+    "commons_file": "TAG HEUER logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tag_heuer.png",
+    "bytes": 11456
+  },
+  "breitling": {
+    "display": "Breitling",
+    "status": "ok",
+    "qid": "Q665740",
+    "commons_file": "Breitling Full Logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/breitling.png",
+    "bytes": 14610
+  },
+  "longines": {
+    "display": "Longines",
+    "status": "ok",
+    "qid": "Q603698",
+    "commons_file": "Longines wordmark logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/longines.png",
+    "bytes": 3918
+  },
+  "tissot": {
+    "display": "Tissot",
+    "status": "ok",
+    "qid": "Q659530",
+    "commons_file": "Tissot Logo (2023).png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tissot.png",
+    "bytes": 12101
+  },
+  "swatch": {
+    "display": "Swatch",
+    "status": "ok",
+    "qid": "Q573422",
+    "commons_file": "Swatch Logo RGB.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/swatch.png",
+    "bytes": 3812
+  },
+  "citizen": {
+    "display": "Citizen",
+    "status": "ok",
+    "qid": "Q1368019",
+    "commons_file": "Citizen logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/citizen.png",
+    "bytes": 3473
+  },
+  "seiko": {
+    "display": "Seiko",
+    "status": "ok",
+    "qid": "Q322601",
+    "commons_file": "Seiko logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/seiko.png",
+    "bytes": 3655
+  },
+  "hamilton": {
+    "display": "Hamilton",
+    "status": "ok",
+    "qid": "Q1573565",
+    "commons_file": "Hamilton Watch Company Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/hamilton.png",
+    "bytes": 2598
+  },
+  "casio": {
+    "display": "Casio",
+    "status": "ok",
+    "qid": "Q217338",
+    "commons_file": "Casio logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/casio.png",
+    "bytes": 4072
+  },
+  "montblanc": {
+    "display": "Montblanc",
+    "status": "ok",
+    "qid": "Q142691",
+    "commons_file": "Montblanc logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/montblanc.png",
+    "bytes": 6593
+  },
+  "pandora": {
+    "display": "Pandora",
+    "status": "ok",
+    "qid": "Q2241604",
+    "commons_file": "Pandora Logo 2019.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/pandora.png",
+    "bytes": 4419
+  },
+  "swarovski": {
+    "display": "Swarovski",
+    "status": "ok",
+    "qid": "Q124984005",
+    "commons_file": "Swarovski new logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/swarovski.png",
+    "bytes": 5137
+  },
+  "ray_ban": {
+    "display": "Ray-Ban",
+    "status": "ok",
+    "qid": "Q653941",
+    "commons_file": "Ray-Ban logo 2.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/ray_ban.png",
+    "bytes": 16197
+  },
+  "oakley": {
+    "display": "Oakley",
+    "status": "ok",
+    "qid": "Q161906",
+    "commons_file": "Oakley logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/oakley.png",
+    "bytes": 4193
+  },
+  "samsonite": {
+    "display": "Samsonite",
+    "status": "ok",
+    "qid": "Q1203426",
+    "commons_file": "Samsonite Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/samsonite.png",
+    "bytes": 4363
+  },
+  "tumi": {
+    "display": "Tumi",
+    "status": "ok",
+    "qid": "Q4465402",
+    "commons_file": "Tumi-Logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tumi.png",
+    "bytes": 11565
+  },
+  "le_creuset": {
+    "display": "Le Creuset",
+    "status": "ok",
+    "qid": "Q555861",
+    "commons_file": "Le Creuset Logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/le_creuset.png",
+    "bytes": 10701
+  },
+  "zwilling": {
+    "display": "Zwilling",
+    "status": "ok",
+    "qid": "Q244736",
+    "commons_file": "ZWILLING-Logo-Hystorie.jpg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/zwilling.png",
+    "bytes": 7001
+  },
+  "delonghi": {
+    "display": "DeLonghi",
+    "status": "ok",
+    "qid": "Q1207494",
+    "commons_file": "De’Longhi.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/delonghi.png",
+    "bytes": 5120
+  },
+  "lego": {
+    "display": "Lego",
+    "status": "ok",
+    "qid": "Q1063455",
+    "commons_file": "LEGO logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/lego.png",
+    "bytes": 19954
+  },
+  "molton_brown": {
+    "display": "Molton Brown",
+    "status": "ok",
+    "qid": "Q902855",
+    "commons_file": "Kao-corp-logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/molton_brown.png",
+    "bytes": 8201
+  },
+  "callaway": {
+    "display": "Callaway",
+    "status": "ok",
+    "qid": "Q1027181",
+    "commons_file": "Callaway Golf Company logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/callaway.png",
+    "bytes": 7430
+  },
+  "taylormade": {
+    "display": "TaylorMade",
+    "status": "ok",
+    "qid": "Q1380797",
+    "commons_file": "TaylorMade.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/taylormade.png",
+    "bytes": 4844
+  },
+  "helly_hansen": {
+    "display": "Helly Hansen",
+    "status": "ok",
+    "qid": "Q1603114",
+    "commons_file": "Helly Hansen logo.jpg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/helly_hansen.png",
+    "bytes": 9867
+  },
+  "cole_haan": {
+    "display": "Cole Haan",
+    "status": "ok",
+    "qid": "Q4356504",
+    "commons_file": "Cole Haan Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/cole_haan.png",
+    "bytes": 2801
+  },
+  "ecco": {
+    "display": "Ecco",
+    "status": "ok",
+    "qid": "Q1280255",
+    "commons_file": "Ecco shoes logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/ecco.png",
+    "bytes": 5121
+  },
+  "camper": {
+    "display": "Camper",
+    "status": "ok",
+    "qid": "Q1030922",
+    "commons_file": "Camper shoes Logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/camper.png",
+    "bytes": 10385
+  },
+  "dunhill": {
+    "display": "Dunhill",
+    "status": "ok",
+    "qid": "Q1784995",
+    "commons_file": "Dunhill logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/dunhill.png",
+    "bytes": 4829
+  },
+  "hugo_boss": {
+    "display": "Boss",
+    "status": "ok",
+    "qid": "Q491627",
+    "commons_file": "Hugo Boss logo 2021.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/hugo_boss.png",
+    "bytes": 3491
+  },
+  "american_eagle": {
+    "display": "American Eagle",
+    "status": "ok",
+    "qid": "Q2842931",
+    "commons_file": "American Eagle Outfitters text logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/american_eagle.png",
+    "bytes": 5304
+  },
+  "ashworth": {
+    "display": "Ashworth",
+    "status": "ok",
+    "qid": "Q4806211",
+    "commons_file": "Ashworth golf logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/ashworth.png",
+    "bytes": 15492
+  },
+  "bath_body_works": {
+    "display": "Bath & Body Works",
+    "status": "ok",
+    "qid": "Q810773",
+    "commons_file": "Bath & Body Works logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/bath_body_works.png",
+    "bytes": 7506
+  },
+  "casetify": {
+    "display": "CASETiFY",
+    "status": "ok",
+    "qid": "Q64209733",
+    "commons_file": "Casetify logo.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/casetify.png",
+    "bytes": 22369
+  },
+  "chevignon": {
+    "display": "Chevignon",
+    "status": "ok",
+    "qid": "Q787601",
+    "commons_file": "Chevignon.jpg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/chevignon.png",
+    "bytes": 7589
+  },
+  "chow_tai_fook": {
+    "display": "Chow Tai Fook",
+    "status": "ok",
+    "qid": "Q5105515",
+    "commons_file": "ChowTaiFook logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/chow_tai_fook.png",
+    "bytes": 10289
+  },
+  "clarks": {
+    "display": "Clarks",
+    "status": "ok",
+    "qid": "Q1095857",
+    "commons_file": "C & J Clarks International company logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/clarks.png",
+    "bytes": 8660
+  },
+  "club_monaco": {
+    "display": "Club Monaco",
+    "status": "ok",
+    "qid": "Q2979949",
+    "commons_file": "Club Monaco logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/club_monaco.png",
+    "bytes": 2619
+  },
+  "crocs": {
+    "display": "Crocs",
+    "status": "ok",
+    "qid": "Q926699",
+    "commons_file": "Crocs wordmark.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/crocs.png",
+    "bytes": 4400
+  },
+  "descente": {
+    "display": "Descente",
+    "status": "ok",
+    "qid": "Q11320384",
+    "commons_file": "DESCENTE company logo new.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/descente.png",
+    "bytes": 2840
+  },
+  "dior": {
+    "display": "Dior",
+    "status": "ok",
+    "qid": "Q542767",
+    "commons_file": "Dior Logo 2022.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/dior.png",
+    "bytes": 4427
+  },
+  "g2000": {
+    "display": "G2000",
+    "status": "ok",
+    "qid": "Q5512676",
+    "commons_file": "G2000 logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/g2000.png",
+    "bytes": 9372
+  },
+  "geox": {
+    "display": "Geox",
+    "status": "ok",
+    "qid": "Q588001",
+    "commons_file": "Geox - logo (Italy, 2003-).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/geox.png",
+    "bytes": 3236
+  },
+  "j_lindeberg": {
+    "display": "J.Lindeberg",
+    "status": "ok",
+    "qid": "Q3356778",
+    "commons_file": "JLindeberg logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/j_lindeberg.png",
+    "bytes": 3129
+  },
+  "k_swiss": {
+    "display": "K-Swiss",
+    "status": "ok",
+    "qid": "Q1422386",
+    "commons_file": "K-Swiss logo (2015).svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/k_swiss.png",
+    "bytes": 14528
+  },
+  "stella_mccartney": {
+    "display": "Stella McCartney",
+    "status": "not_found"
+  },
+  "valentino": {
+    "display": "Valentino",
+    "status": "not_found"
+  },
+  "thom_browne": {
+    "display": "Thom Browne",
+    "status": "not_found"
+  },
+  "brioni": {
+    "display": "Brioni",
+    "status": "not_found"
+  },
+  "brunello_cucinelli": {
+    "display": "Brunello Cucinelli",
+    "status": "not_found"
+  },
+  "marc_jacobs": {
+    "display": "Marc Jacobs",
+    "status": "not_found"
+  },
+  "christian_louboutin": {
+    "display": "Christian Louboutin",
+    "status": "not_found"
+  },
+  "manolo_blahnik": {
+    "display": "Manolo Blahnik",
+    "status": "not_found"
+  },
+  "roger_vivier": {
+    "display": "Roger Vivier",
+    "status": "not_found"
+  },
+  "arcteryx": {
+    "display": "Arc'teryx",
+    "status": "not_found"
+  },
+  "hoka": {
+    "display": "Hoka",
+    "status": "not_found"
+  },
+  "champion": {
+    "display": "Champion",
+    "status": "ok",
+    "qid": "Q2948688",
+    "commons_file": "Champion USA logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/champion.png",
+    "bytes": 7629
+  },
+  "fred_perry": {
+    "display": "Fred Perry",
+    "status": "not_found"
+  },
+  "brooks_brothers": {
+    "display": "Brooks Brothers",
+    "status": "not_found"
+  },
+  "diesel": {
+    "display": "Diesel",
+    "status": "ok",
+    "qid": "Q158285",
+    "commons_file": "Diesel.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/diesel.png",
+    "bytes": 4734
+  },
+  "barbour": {
+    "display": "Barbour",
+    "status": "not_found"
+  },
+  "aquascutum": {
+    "display": "Aquascutum",
+    "status": "not_found"
+  },
+  "mackintosh": {
+    "display": "Mackintosh",
+    "status": "not_found"
+  },
+  "margaret_howell": {
+    "display": "Margaret Howell",
+    "status": "not_found"
+  },
+  "paul_smith": {
+    "display": "Paul Smith",
+    "status": "not_found"
+  },
+  "theory": {
+    "display": "Theory",
+    "status": "not_found"
+  },
+  "zero_halliburton": {
+    "display": "Zero Halliburton",
+    "status": "not_found"
+  },
+  "wedgwood": {
+    "display": "Wedgwood",
+    "status": "not_found"
+  },
+  "royal_copenhagen": {
+    "display": "Royal Copenhagen",
+    "status": "not_found"
+  },
+  "mammut": {
+    "display": "Mammut",
+    "status": "not_found"
+  },
+  "coleman": {
+    "display": "Coleman",
+    "status": "not_found"
+  },
+  "y3": {
+    "display": "Y-3",
+    "status": "not_found"
+  },
+  "aigle": {
+    "display": "Aigle",
+    "status": "not_found"
+  },
+  "alice_olivia": {
+    "display": "Alice + Olivia",
+    "status": "not_found"
+  },
+  "american_vintage": {
+    "display": "American Vintage",
+    "status": "not_found"
+  },
+  "anteprima": {
+    "display": "Anteprima",
+    "status": "not_found"
+  },
+  "atsuro_tayama": {
+    "display": "Atsuro Tayama",
+    "status": "not_found"
+  },
+  "bora_aksu": {
+    "display": "Bora Aksu",
+    "status": "not_found"
+  },
+  "cath_kidston": {
+    "display": "Cath Kidston",
+    "status": "not_found"
+  },
+  "chow_sang_sang": {
+    "display": "Chow Sang Sang",
+    "status": "not_found"
+  },
+  "city_chain": {
+    "display": "City Chain",
+    "status": "not_found"
+  },
+  "comvita": {
+    "display": "Comvita",
+    "status": "not_found"
+  },
+  "daks": {
+    "display": "DAKS",
+    "status": "not_found"
+  },
+  "dr_kong": {
+    "display": "Dr. Kong",
+    "status": "not_found"
+  },
+  "evisu": {
+    "display": "Evisu",
+    "status": "not_found"
+  },
+  "fila": {
+    "display": "Fila",
+    "status": "not_found"
+  },
+  "initial_fashion": {
+    "display": "initial",
+    "status": "not_found"
+  },
+  "kipling": {
+    "display": "Kipling",
+    "status": "ok",
+    "qid": "Q6414641",
+    "commons_file": "Kipling wordmark.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/kipling.png",
+    "bytes": 4735
+  },
+  "kolon_sport": {
+    "display": "Kolon Sport",
+    "status": "not_found"
+  },
+  "lukfook": {
+    "display": "Lukfook Jewellery",
+    "status": "ok",
+    "qid": "Q10893397",
+    "commons_file": "LukFook logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/lukfook.png",
+    "bytes": 12231
+  },
+  "mabelle": {
+    "display": "MaBelle",
+    "status": "not_found"
+  },
+  "maje": {
+    "display": "Maje",
+    "status": "not_found"
+  },
+  "marimekko": {
+    "display": "Marimekko",
+    "status": "ok",
+    "qid": "Q534903",
+    "commons_file": "Marimekko-logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/marimekko.png",
+    "bytes": 8800
+  },
+  "marithe_girbaud": {
+    "display": "Marithé François Girbaud",
+    "status": "ok",
+    "qid": "Q1320295",
+    "commons_file": "Logo Marithé François Girbaud.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/marithe_girbaud.png",
+    "bytes": 13982
+  },
+  "maryling": {
+    "display": "Maryling",
+    "status": "not_found"
+  },
+  "matin_kim": {
+    "display": "Matin Kim",
+    "status": "not_found"
+  },
+  "max_and_co": {
+    "display": "MAX&Co.",
+    "status": "ok",
+    "qid": "Q120570926",
+    "commons_file": "MaxCo-logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/max_and_co.png",
+    "bytes": 9871
+  },
+  "miss_sixty": {
+    "display": "Miss Sixty",
+    "status": "ok",
+    "qid": "Q241295",
+    "commons_file": "Miss Sixty logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/miss_sixty.png",
+    "bytes": 3048
+  },
+  "mlb_fashion": {
+    "display": "MLB",
+    "status": "not_found"
+  },
+  "moodytiger": {
+    "display": "moodytiger",
+    "status": "not_found"
+  },
+  "national_geographic_apparel": {
+    "display": "National Geographic",
+    "status": "not_found"
+  },
+  "palladium_boots": {
+    "display": "Palladium",
+    "status": "ok",
+    "qid": "Q67201584",
+    "commons_file": "Palladium-logo.jpg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/palladium_boots.png",
+    "bytes": 4792
+  },
+  "repetto": {
+    "display": "Repetto",
+    "status": "not_found"
+  },
+  "rockport": {
+    "display": "Rockport",
+    "status": "not_found"
+  },
+  "rue_madame": {
+    "display": "Rue Madame",
+    "status": "not_found"
+  },
+  "sam_edelman": {
+    "display": "Sam Edelman",
+    "status": "not_found"
+  },
+  "sandro": {
+    "display": "Sandro Paris",
+    "status": "ok",
+    "qid": "Q3472022",
+    "commons_file": "Sandro-logo.jpg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/sandro.png",
+    "bytes": 5801
+  },
+  "shanghai_tang": {
+    "display": "Shanghai Tang",
+    "status": "not_found"
+  },
+  "the_body_shop": {
+    "display": "The Body Shop",
+    "status": "not_found"
+  },
+  "thermos": {
+    "display": "Thermos",
+    "status": "ok",
+    "qid": "Q3523904",
+    "commons_file": "Thermos logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/thermos.png",
+    "bytes": 4126
+  },
+  "tsl_jewellery": {
+    "display": "TSL",
+    "status": "ok",
+    "qid": "Q7765134",
+    "commons_file": "The Software Link logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/tsl_jewellery.png",
+    "bytes": 5365
+  },
+  "uniqlo": {
+    "display": "UNIQLO",
+    "status": "ok",
+    "qid": "Q1397688",
+    "commons_file": "FAST RETAILING logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/uniqlo.png",
+    "bytes": 3406
+  },
+  "vans": {
+    "display": "Vans",
+    "status": "ok",
+    "qid": "Q1135366",
+    "commons_file": "Vans company logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/vans.png",
+    "bytes": 8833
+  },
+  "victorinox": {
+    "display": "Victorinox",
+    "status": "ok",
+    "qid": "Q503405",
+    "commons_file": "Victorinox Logo.svg",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/victorinox.png",
+    "bytes": 11455
+  },
+  "vilebrequin": {
+    "display": "Vilebrequin",
+    "status": "ok",
+    "qid": "Q3558391",
+    "commons_file": "Logo VBQ blue navy.png",
+    "local_path": "/Users/den/Documents/Brain/Vibe coding/buyright/src/assets/logos/vilebrequin.png",
+    "bytes": 1327
+  },
+  "vivaia": {
+    "display": "VIVAIA",
+    "status": "not_found"
+  },
+  "vivienne_westwood": {
+    "display": "Vivienne Westwood",
+    "status": "not_found"
+  }
+}
