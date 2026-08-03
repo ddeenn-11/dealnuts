@@ -26,6 +26,7 @@ export default function AddEntry({ onSaved }) {
   const [saving, setSaving] = useState(false)
   const [scanning, setScanning] = useState(false)
   const [categoryTouched, setCategoryTouched] = useState(false)
+  const [currencyTouched, setCurrencyTouched] = useState(false)
   const cameraInputRef = useRef(null)
   const libraryInputRef = useRef(null)
 
@@ -88,10 +89,14 @@ export default function AddEntry({ onSaved }) {
         ...f,
         brand: f.brand || hints.brand,
         price: f.price || hints.price,
-        // Only apply the category guess if the user hasn't picked one
-        // themselves yet — never override a manual choice.
+        // Only apply the category/currency guess if the user hasn't picked
+        // one themselves yet — never override a manual choice. Currency
+        // needs its own "touched" flag rather than reusing the price's
+        // own emptiness check, since currency always has a real default
+        // value (HKD), not an empty one.
         category: !categoryTouched && hints.category ? hints.category : f.category,
         subcategory: !categoryTouched && hints.category ? hints.subcategory : f.subcategory,
+        currency: !currencyTouched && hints.currency ? hints.currency : f.currency,
         description: f.description || descriptionHints || f.description,
       }))
     } catch {
@@ -108,6 +113,11 @@ export default function AddEntry({ onSaved }) {
   function updateCategory(value) {
     setCategoryTouched(true)
     setForm((f) => ({ ...f, category: value, subcategory: '' }))
+  }
+
+  function updateCurrency(value) {
+    setCurrencyTouched(true)
+    setForm((f) => ({ ...f, currency: value }))
   }
 
   async function handleSubmit(e) {
@@ -131,6 +141,7 @@ export default function AddEntry({ onSaved }) {
       setForm(emptyForm)
       setPhotoBlob(null)
       setCategoryTouched(false)
+      setCurrencyTouched(false)
       if (cameraInputRef.current) cameraInputRef.current.value = ''
       if (libraryInputRef.current) libraryInputRef.current.value = ''
       onSaved?.()
@@ -282,7 +293,7 @@ export default function AddEntry({ onSaved }) {
         <div className="flex gap-2">
           <select
             value={form.currency}
-            onChange={(e) => updateField('currency', e.target.value)}
+            onChange={(e) => updateCurrency(e.target.value)}
             className="field-input w-24 shrink-0 font-mono text-sm"
           >
             {CURRENCIES.map((c) => (
