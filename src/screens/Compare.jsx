@@ -267,7 +267,7 @@ function Thumb({ entry, compact }) {
       }`}
     >
       {url ? (
-        <img src={url} alt="" className="h-full w-full object-cover" />
+        <img src={url} alt="" className="h-full w-full object-contain" />
       ) : (
         <span className="flex h-full w-full items-center justify-center text-inkmuted">No photo</span>
       )}

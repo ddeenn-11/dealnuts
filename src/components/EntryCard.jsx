@@ -33,7 +33,7 @@ export default function EntryCard({ entry, onClick, selectable = false, selected
     >
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-paper">
         {photoUrl ? (
-          <img src={photoUrl} alt="" className="h-full w-full object-cover" />
+          <img src={photoUrl} alt="" className="h-full w-full object-contain" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-inkmuted">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

@@ -1,8 +1,9 @@
 import { nearestColorName } from './colors.js'
 
 // Resizes and compresses a captured photo before it goes into IndexedDB,
-// so a session of browsing many stores doesn't balloon storage size.
-export function compressImage(file, maxDimension = 1280, quality = 0.75) {
+// so a session of browsing many stores doesn't balloon storage size and
+// thumbnails stay quick to decode.
+export function compressImage(file, maxDimension = 1024, quality = 0.7) {
   return new Promise((resolve, reject) => {
     const img = new Image()
     const objectUrl = URL.createObjectURL(file)
