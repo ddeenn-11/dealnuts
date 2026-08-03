@@ -46,10 +46,15 @@ function guessSize(text) {
   return match ? match[1].toUpperCase() : ''
 }
 
+// Brand names occasionally end in a digit (Dsquared2, G2000, Y-3) — the
+// character class allows digits anywhere after the first letter so those
+// aren't rejected, while still requiring the line to start with a letter
+// (rules out pure SKU/barcode captions) and the price/all-numeric checks
+// above still exclude tag-price and quantity lines.
 function isBrandLikeLine(trimmed) {
   if (!trimmed || trimmed.length > 24) return false
   if (PRICE_TOKEN.test(trimmed) || /^[0-9.,\s]+$/.test(trimmed)) return false
-  return /^[A-Za-z][A-Za-z&'.\s-]*$/.test(trimmed)
+  return /^[A-Za-z][A-Za-z0-9&'.\s-]*$/.test(trimmed)
 }
 
 // Fallback for when block/line geometry isn't available: the first short,

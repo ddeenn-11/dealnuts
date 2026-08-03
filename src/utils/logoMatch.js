@@ -6,6 +6,13 @@
 // known, bounded set of brands. This can only ever recognize brands that
 // are in the reference set; it's a complement to OCR text matching, not a
 // replacement.
+//
+// Both the query photo and the reference set are preprocessed into a
+// shape-only outline (see edges.js) before embedding, so a logo is matched
+// by its mark, not its color — a red Nike swoosh and a black one embed
+// close together.
+
+import { toOutlineCanvas, loadImageFromBlob } from './edges.js'
 
 // Bundled locally (public/models/) rather than fetched from tfhub.dev at
 // runtime — this app is meant to be used standing in a store, often with
@@ -45,34 +52,9 @@ function cosineSimilarity(a, b) {
 }
 
 async function embedBlob(model, blob) {
-  const img = await new Promise((resolve, reject) => {
-    const el = new Image()
-    const url = URL.createObjectURL(blob)
-    el.onload = () => {
-      URL.revokeObjectURL(url)
-      resolve(el)
-    }
-    el.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error('Could not read that photo.'))
-    }
-    el.src = url
-  })
-  // Flatten onto white first — camera photos are opaque so this is a no-op
-  // for them, but it also makes the function safe for a transparent PNG
-  // (e.g. picked from the photo library), which would otherwise read its
-  // transparent background as black and wash out a dark logo mark. The
-  // reference embeddings were computed the same way, so this keeps the two
-  // sides of the comparison consistent.
-  const canvas = document.createElement('canvas')
-  canvas.width = img.naturalWidth || img.width
-  canvas.height = img.naturalHeight || img.height
-  const ctx = canvas.getContext('2d')
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.drawImage(img, 0, 0)
-
-  const embeddingTensor = model.infer(canvas, true)
+  const img = await loadImageFromBlob(blob)
+  const outline = toOutlineCanvas(img)
+  const embeddingTensor = model.infer(outline, true)
   const embedding = await embeddingTensor.data()
   embeddingTensor.dispose()
   return Array.from(embedding)
