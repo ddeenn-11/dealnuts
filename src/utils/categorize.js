@@ -61,23 +61,11 @@ const EXTRA_KEYWORDS = {
     laptop: 'Computers & accessories', keyboard: 'Computers & accessories', mouse: 'Computers & accessories', charger: 'Computers & accessories', cable: 'Computers & accessories',
     camera: 'Cameras', lens: 'Cameras',
   },
-  food: {
-    snack: 'Snacks', chips: 'Snacks', chocolate: 'Snacks', candy: 'Snacks', cookie: 'Snacks', cookies: 'Snacks',
-    tea: 'Beverages', coffee: 'Beverages', juice: 'Beverages', soda: 'Beverages',
-    gourmet: 'Specialty & gourmet', artisan: 'Specialty & gourmet',
-    vitamin: 'Supplements', supplement: 'Supplements', protein: 'Supplements',
-  },
-  babies: {
+  kids: {
     onesie: 'Clothing', bib: 'Clothing',
     rattle: 'Toys', plush: 'Toys',
     bottle: 'Feeding', pacifier: 'Feeding',
     stroller: 'Gear', crib: 'Gear', carrier: 'Gear',
-  },
-  entertainment: {
-    puzzle: 'Toys & games', 'board game': 'Toys & games', figure: 'Toys & games', figurine: 'Toys & games',
-    book: 'Books', novel: 'Books',
-    collectible: 'Collectibles', 'trading card': 'Collectibles',
-    vinyl: 'Media', album: 'Media', 'blu-ray': 'Media',
   },
 }
 

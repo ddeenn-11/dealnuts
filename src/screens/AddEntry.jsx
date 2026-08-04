@@ -248,16 +248,7 @@ export default function AddEntry({ onSaved }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Brand">
-          <input
-            type="text"
-            value={form.brand}
-            onChange={(e) => updateField('brand', e.target.value)}
-            placeholder="e.g. Nike"
-            className="field-input"
-          />
-        </Field>
-        <Field label="Category">
+        <Field label="Category" className={subcategoryOptions.length > 0 ? '' : 'col-span-2'}>
           <select
             value={form.category}
             onChange={(e) => updateCategory(e.target.value)}
@@ -270,24 +261,33 @@ export default function AddEntry({ onSaved }) {
             ))}
           </select>
         </Field>
+        {subcategoryOptions.length > 0 && (
+          <Field label="Subcategory">
+            <select
+              value={form.subcategory}
+              onChange={(e) => updateField('subcategory', e.target.value)}
+              className="field-input"
+            >
+              <option value="">None</option>
+              {subcategoryOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
       </div>
 
-      {subcategoryOptions.length > 0 && (
-        <Field label="Subcategory">
-          <select
-            value={form.subcategory}
-            onChange={(e) => updateField('subcategory', e.target.value)}
-            className="field-input"
-          >
-            <option value="">None</option>
-            {subcategoryOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </Field>
-      )}
+      <Field label="Brand">
+        <input
+          type="text"
+          value={form.brand}
+          onChange={(e) => updateField('brand', e.target.value)}
+          placeholder="e.g. Nike"
+          className="field-input"
+        />
+      </Field>
 
       <Field label="Price">
         <div className="flex gap-2">
@@ -338,9 +338,9 @@ export default function AddEntry({ onSaved }) {
   )
 }
 
-function Field({ label, children }) {
+function Field({ label, children, className = '' }) {
   return (
-    <label className="block">
+    <label className={`block ${className}`}>
       <span className="mb-1.5 block text-xs font-medium text-inkmuted">{label}</span>
       {children}
     </label>

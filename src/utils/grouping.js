@@ -65,13 +65,18 @@ export const CATEGORIES = [
   },
   {
     value: 'bags',
-    label: 'Bags',
-    subcategories: ['Handbags', 'Backpacks', 'Totes', 'Wallets & small goods', 'Other bags'],
+    label: 'Bags & Luggage',
+    subcategories: ['Handbags', 'Backpacks', 'Totes', 'Wallets & small goods', 'Luggage', 'Other bags'],
   },
   {
     value: 'accessories',
     label: 'Accessories',
     subcategories: ['Jewelry', 'Belts', 'Hats', 'Scarves', 'Sunglasses', 'Other accessories'],
+  },
+  {
+    value: 'luxury',
+    label: 'Luxury',
+    subcategories: [],
   },
   {
     value: 'home',
@@ -91,22 +96,12 @@ export const CATEGORIES = [
   {
     value: 'electronics',
     label: 'Electronics',
-    subcategories: ['Audio', 'Wearables', 'Phones & tablets', 'Computers & accessories', 'Cameras', 'Other electronics'],
+    subcategories: ['Audio', 'Wearables', 'Watches', 'Phones & tablets', 'Computers & accessories', 'Cameras', 'Other electronics'],
   },
   {
-    value: 'food',
-    label: 'Food',
-    subcategories: ['Snacks', 'Beverages', 'Specialty & gourmet', 'Supplements', 'Other food'],
-  },
-  {
-    value: 'babies',
-    label: 'Babies',
-    subcategories: ['Clothing', 'Toys', 'Feeding', 'Gear', 'Other baby'],
-  },
-  {
-    value: 'entertainment',
-    label: 'Entertainment',
-    subcategories: ['Toys & games', 'Books', 'Collectibles', 'Media', 'Other entertainment'],
+    value: 'kids',
+    label: 'Kids',
+    subcategories: ['Clothing', 'Toys', 'Feeding', 'Gear', 'Other kids'],
   },
   {
     value: 'other',
