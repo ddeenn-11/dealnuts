@@ -4,6 +4,7 @@ import { getCurrentPosition, reverseGeocode } from '../utils/geolocation.js'
 import { compressImage } from '../utils/image.js'
 import { CATEGORIES, subcategoriesFor } from '../utils/grouping.js'
 import { scanTag } from '../utils/ocr.js'
+import { cloudScanTag } from '../utils/cloudScan.js'
 import { CURRENCIES, DEFAULT_CURRENCY } from '../utils/currency.js'
 
 const emptyForm = {
@@ -93,21 +94,42 @@ export default function AddEntry({ onSaved }) {
     setScanning(true)
     try {
       const hints = await scanTag(blob)
+
+      // Brand and price are the two fields local, on-device OCR struggles
+      // with most — brand because it only ever matches our own curated
+      // list, price because tag layouts vary too much for regex alone.
+      // Escalating to a hosted vision model only when one of those is
+      // still blank keeps the (photo-leaves-device) cloud call to the
+      // cases that actually need it, rather than every scan.
+      let cloudHints = null
+      if (!hints.brand || !hints.price) {
+        cloudHints = await cloudScanTag(blob)
+      }
+
       const descriptionHints = [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`]
         .filter(Boolean)
         .join(', ')
+
+      // Local wins over cloud whenever both found something, for every
+      // field — cloud only ever fills in what local OCR left blank.
+      const brand = hints.brand || cloudHints?.brand || ''
+      const price = hints.price || cloudHints?.price || ''
+      const currency = hints.currency || cloudHints?.currency || ''
+      const category = hints.category || cloudHints?.category || ''
+      const subcategory = hints.category ? hints.subcategory : cloudHints?.category ? cloudHints.subcategory : ''
+
       setForm((f) => ({
         ...f,
-        brand: f.brand || hints.brand,
-        price: f.price || hints.price,
+        brand: f.brand || brand,
+        price: f.price || price,
         // Only apply the category/currency guess if the user hasn't picked
         // one themselves yet — never override a manual choice. Currency
         // needs its own "touched" flag rather than reusing the price's
         // own emptiness check, since currency always has a real default
         // value (HKD), not an empty one.
-        category: !categoryTouched && hints.category ? hints.category : f.category,
-        subcategory: !categoryTouched && hints.category ? hints.subcategory : f.subcategory,
-        currency: !currencyTouched && hints.currency ? hints.currency : f.currency,
+        category: !categoryTouched && category ? category : f.category,
+        subcategory: !categoryTouched && category ? subcategory : f.subcategory,
+        currency: !currencyTouched && currency ? currency : f.currency,
         description: f.description || descriptionHints || f.description,
       }))
     } catch {
@@ -218,9 +240,7 @@ export default function AddEntry({ onSaved }) {
           </label>
         </div>
 
-        {scanning && (
-          <p className="mt-2 text-xs text-inkmuted">Scanning tag for brand, price, category &amp; color…</p>
-        )}
+        {scanning && <p className="mt-2 text-xs text-inkmuted">Scanning…</p>}
       </div>
 
       <div className="flex items-center gap-2 text-xs">
