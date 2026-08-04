@@ -75,7 +75,18 @@ export default function AddEntry({ onSaved }) {
       // fall back to the original file if resizing failed
     }
     setPhotoBlob(compressed)
-    runScan(compressed)
+
+    // OCR gets its own, sharper pass — small tag text needs more pixels
+    // than the 1024px/quality-0.7 version we store, so scanning the
+    // stored blob directly was leaving detail on the table. Falls back to
+    // whatever we already have if this second compression fails.
+    let ocrBlob = compressed
+    try {
+      ocrBlob = await compressImage(file, 1600, 0.9)
+    } catch {
+      // fall back to the stored blob if the higher-res pass failed
+    }
+    runScan(ocrBlob)
   }
 
   async function runScan(blob) {
