@@ -136,6 +136,15 @@ export default async function handler(req, res) {
       },
     })
     parsed = response.text ? extractJson(response.text) : null
+    // TEMP DEBUG - remove after diagnosing the NARS parse failure
+    if (!parsed) {
+      res.status(502).json({
+        error: 'Could not parse model response',
+        rawText: response.text,
+        finishReason: response.candidates?.[0]?.finishReason,
+      })
+      return
+    }
   } catch (err) {
     res.status(502).json({ error: 'Cloud scan failed', detail: String(err?.message || err) })
     return
