@@ -67,6 +67,17 @@ const EXTRA_KEYWORDS = {
     bottle: 'Feeding', pacifier: 'Feeding',
     stroller: 'Gear', crib: 'Gear', carrier: 'Gear',
   },
+  groceries: {
+    vegetable: 'Food & Beverage', vegetables: 'Food & Beverage', fruit: 'Food & Beverage', fruits: 'Food & Beverage', produce: 'Food & Beverage',
+    chicken: 'Food & Beverage', beef: 'Food & Beverage', pork: 'Food & Beverage', seafood: 'Food & Beverage', fish: 'Food & Beverage', shrimp: 'Food & Beverage',
+    milk: 'Food & Beverage', cheese: 'Food & Beverage', yogurt: 'Food & Beverage', butter: 'Food & Beverage', eggs: 'Food & Beverage',
+    rice: 'Food & Beverage', pasta: 'Food & Beverage', noodle: 'Food & Beverage', noodles: 'Food & Beverage', cereal: 'Food & Beverage', flour: 'Food & Beverage', sauce: 'Food & Beverage', canned: 'Food & Beverage',
+    frozen: 'Food & Beverage', 'ice cream': 'Food & Beverage',
+    juice: 'Food & Beverage', soda: 'Food & Beverage', water: 'Food & Beverage', tea: 'Food & Beverage', coffee: 'Food & Beverage', snack: 'Food & Beverage', snacks: 'Food & Beverage',
+    detergent: 'Household & cleaning', tissue: 'Household & cleaning', 'paper towel': 'Household & cleaning', 'trash bag': 'Household & cleaning', bleach: 'Household & cleaning', cleaner: 'Household & cleaning',
+    toothpaste: 'Personal care', toothbrush: 'Personal care', deodorant: 'Personal care', razor: 'Personal care', soap: 'Personal care',
+    vitamin: 'Health & wellness', vitamins: 'Health & wellness', supplement: 'Health & wellness', supplements: 'Health & wellness', protein: 'Health & wellness',
+  },
 }
 
 // Returns { category, subcategory } for the longest keyword match found in

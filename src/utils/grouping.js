@@ -104,6 +104,11 @@ export const CATEGORIES = [
     subcategories: ['Clothing', 'Toys', 'Feeding', 'Gear', 'Other kids'],
   },
   {
+    value: 'groceries',
+    label: 'Groceries',
+    subcategories: ['Food & Beverage', 'Household & cleaning', 'Personal care', 'Health & wellness', 'Other groceries'],
+  },
+  {
     value: 'other',
     label: 'Other',
     subcategories: [],

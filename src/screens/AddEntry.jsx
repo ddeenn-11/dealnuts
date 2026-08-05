@@ -18,6 +18,11 @@ const emptyForm = {
   storeNumber: '',
 }
 
+// Color/size only get written into the description for categories where
+// that's actually useful shorthand — a garment's color and size are
+// meaningful; a grocery item's or a kitchen gadget's aren't.
+const DESCRIPTION_HINT_CATEGORIES = ['clothing', 'shoes', 'luxury', 'bags']
+
 export default function AddEntry({ onSaved }) {
   const [form, setForm] = useState(emptyForm)
   const [photoBlob, setPhotoBlob] = useState(null)
@@ -69,6 +74,16 @@ export default function AddEntry({ onSaved }) {
   async function handlePhotoChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
+
+    // Taking/importing a new photo starts a new find — clear whatever a
+    // previous, unsaved scan filled in so it can't bleed into this one
+    // (same reasoning as the reset after Save). Location/Store # are left
+    // alone since they're not scan output — still correct for the next
+    // item found at the same place.
+    setForm((f) => ({ ...emptyForm, storeName: f.storeName, storeNumber: f.storeNumber }))
+    setCategoryTouched(false)
+    setCurrencyTouched(false)
+
     let compressed = file
     try {
       compressed = await compressImage(file)
@@ -106,10 +121,6 @@ export default function AddEntry({ onSaved }) {
         cloudHints = await cloudScanTag(blob)
       }
 
-      const descriptionHints = [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`]
-        .filter(Boolean)
-        .join(', ')
-
       // Local wins over cloud whenever both found something, for every
       // field — cloud only ever fills in what local OCR left blank.
       const brand = hints.brand || cloudHints?.brand || ''
@@ -117,6 +128,14 @@ export default function AddEntry({ onSaved }) {
       const currency = hints.currency || cloudHints?.currency || ''
       const category = hints.category || cloudHints?.category || ''
       const subcategory = hints.category ? hints.subcategory : cloudHints?.category ? cloudHints.subcategory : ''
+
+      // Same "will this actually land in the form" check the category
+      // field itself uses below, computed early so the description hint
+      // can be gated on wherever the category is actually going to end up.
+      const effectiveCategory = !categoryTouched && category ? category : form.category
+      const descriptionHints = DESCRIPTION_HINT_CATEGORIES.includes(effectiveCategory)
+        ? [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`].filter(Boolean).join(', ')
+        : ''
 
       setForm((f) => ({
         ...f,
