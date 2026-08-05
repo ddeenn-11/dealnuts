@@ -25,7 +25,11 @@ const RATE_LIMIT_MAX_CALLS = 10
 
 // Flash is Gemini's cost/speed-optimized tier - the equivalent choice to
 // Haiku on the Anthropic side for this kind of bounded extraction task.
-const MODEL = 'gemini-2.5-flash'
+// Using the "-latest" alias rather than a pinned version (e.g.
+// gemini-2.5-flash) since Google retires specific dated versions for new
+// API keys on their own schedule - this alias is Google's own mechanism
+// for always pointing at whichever flash model is currently supported.
+const MODEL = 'gemini-flash-latest'
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
