@@ -128,19 +128,19 @@ export default async function handler(req, res) {
         },
       ],
       config: {
-        maxOutputTokens: 500,
+        // A harder photo (glare, clutter) previously exhausted a 300-token
+        // budget on internal reasoning before the model ever got to
+        // writing the JSON answer (finishReason: MAX_TOKENS, no JSON in
+        // the output at all). Tried disabling reasoning outright via
+        // thinkingConfig: { thinkingBudget: 0 }, but whatever model
+        // "gemini-flash-latest" currently resolves to rejects that field
+        // entirely (400 INVALID_ARGUMENT) - so instead just budgeting
+        // generously enough to cover reasoning + the actual JSON.
+        maxOutputTokens: 1024,
         // Ask Gemini to emit JSON directly rather than free text we then
         // have to fish a JSON object out of - extractJson() below is just
         // a safety net in case it still wraps the output in stray text.
         responseMimeType: 'application/json',
-        // Without this, the model spends part of its token budget on
-        // internal reasoning before ever writing the JSON answer - on a
-        // tricky photo that reasoning alone was enough to exhaust
-        // maxOutputTokens and cut the response off before any JSON came
-        // out at all. This is a bounded extraction task, not one that
-        // benefits from extended reasoning, and disabling it is also
-        // strictly cheaper.
-        thinkingConfig: { thinkingBudget: 0 },
       },
     })
     parsed = response.text ? extractJson(response.text) : null
