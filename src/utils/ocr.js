@@ -21,6 +21,18 @@ function getWorker() {
   return workerPromise
 }
 
+// Tesseract's WASM binary + language data only download/initialize once,
+// on whatever call to getWorker() happens first — normally the first
+// photo the user takes, which puts that cold-start cost right in the
+// middle of their wait. Called on AddEntry mount instead, so it's already
+// warm (or warming) by the time there's a photo to scan.
+export function preloadOcrWorker() {
+  getWorker().catch(() => {
+    // Best-effort warmup — a failure here just means the first real scan
+    // pays the init cost itself, same as before this existed.
+  })
+}
+
 // Tesseract's default page segmentation mode (AUTO) assumes something
 // close to a single flowing document. That's fine for a plain "$29.99"
 // price line, but it falls apart on the rest of a real tag — a huge
@@ -161,6 +173,23 @@ function guessSize(text) {
   return ''
 }
 
+// Weight/volume printed on beauty and grocery tags — "50ml", "500g",
+// "6-pack" — a different signal from guessSize() above: those categories'
+// tags print a physical quantity, not a garment size. Unit-anchored (the
+// number must be directly followed by a known unit word), so this doesn't
+// compete with price or size parsing, which never have a unit suffix like
+// this. "fl oz" is checked before the bare "oz"/"l" units so a fluid-ounce
+// or liter reading isn't cut short by the shorter alternative matching
+// first.
+const QUANTITY_PATTERN = /\b([0-9]+(?:\.[0-9]+)?)\s?(fl\s?\.?\s?oz|floz|ml|l|kg|g|lbs?|oz)\b|\b([0-9]+)[\s-]?(pack|pcs|ct|count)\b/i
+
+function guessQuantity(text) {
+  const match = text.match(QUANTITY_PATTERN)
+  if (!match) return ''
+  if (match[1] && match[2]) return `${match[1]}${match[2].replace(/\s+/g, ' ').trim()}`
+  return `${match[3]}-${match[4].toLowerCase()}`
+}
+
 // Brand is now a closed-vocabulary lookup, not a heuristic guess. The old
 // approach (tallest/first letters-only line) confidently returned garbage
 // as often as it returned a real brand — a marketing tagline, a section
@@ -200,15 +229,17 @@ export async function scanTag(blob) {
 
   let size = guessSize(text)
   let textColor = guessColorFromText(text)
+  let quantity = guessQuantity(text)
 
   // Second pass, only when the first left something on the table — see
   // recognizeSparse() for why this isn't just always-on.
-  if (!size || !textColor) {
+  if (!size || !textColor || !quantity) {
     try {
       const sparse = await recognizeSparse(worker, blob)
       const sparseText = sparse.data.text || ''
       if (!size) size = guessSize(sparseText)
       if (!textColor) textColor = guessColorFromText(sparseText)
+      if (!quantity) quantity = guessQuantity(sparseText)
       // Merge rather than replace — brand/price/currency below should
       // still get first crack at whichever pass actually found them.
       text = `${text}\n${sparseText}`
@@ -217,7 +248,26 @@ export async function scanTag(blob) {
     }
   }
 
-  const categoryHint = guessCategory(text)
+  const brand = guessKnownBrand(text)
+  let categoryHint = guessCategory(text)
+
+  // Keyword matching (guessCategory) only catches a category when the tag
+  // spells out an ordinary product word — "moisturizer", "serum". Luxury
+  // and designer product copy routinely doesn't ("Supercharged Gel-Creme
+  // Synchronized Multi-Recovery" for what is, plainly, a beauty product),
+  // and no keyword list will ever keep up with marketing language. When
+  // keywords found nothing but the brand itself was recognized, fall back
+  // to that brand's own category — but only when BRAND_CATEGORIES maps it
+  // to exactly one category; a brand spanning several (e.g. Adidas: shoes
+  // and clothing) is genuinely ambiguous, and guessing wrong here would be
+  // worse than leaving category on its default.
+  if (!categoryHint && brand) {
+    const brandCategories = BRAND_CATEGORIES[brand]
+    if (brandCategories?.length === 1) {
+      categoryHint = { category: brandCategories[0], subcategory: '' }
+    }
+  }
+
   let imageColor = ''
   if (!textColor) {
     try {
@@ -228,10 +278,11 @@ export async function scanTag(blob) {
   }
 
   return {
-    brand: guessKnownBrand(text),
+    brand,
     price: guessPrice(text),
     currency: guessCurrency(text),
     size,
+    quantity,
     category: categoryHint?.category || '',
     subcategory: categoryHint?.subcategory || '',
     color: textColor || imageColor,

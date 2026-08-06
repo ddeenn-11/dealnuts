@@ -3,7 +3,7 @@ import { addEntry } from '../db.js'
 import { getCurrentPosition, reverseGeocode } from '../utils/geolocation.js'
 import { compressImage } from '../utils/image.js'
 import { CATEGORIES, subcategoriesFor } from '../utils/grouping.js'
-import { scanTag } from '../utils/ocr.js'
+import { scanTag, preloadOcrWorker } from '../utils/ocr.js'
 import { cloudScanTag } from '../utils/cloudScan.js'
 import { CURRENCIES, DEFAULT_CURRENCY } from '../utils/currency.js'
 
@@ -18,10 +18,14 @@ const emptyForm = {
   storeNumber: '',
 }
 
-// Color/size only get written into the description for categories where
-// that's actually useful shorthand — a garment's color and size are
-// meaningful; a grocery item's or a kitchen gadget's aren't.
-const DESCRIPTION_HINT_CATEGORIES = ['clothing', 'shoes', 'luxury', 'bags']
+// Which OCR-derived fields are worth writing into the description depends
+// on the category — a garment's color/size is meaningful shorthand, but
+// makes no sense for a bottle of serum or a bag of rice, which are better
+// described by their weight/volume instead. Every other category (Home,
+// Electronics, Kids, etc.) gets no auto-fill — no field guessed so far is
+// a reliable enough shorthand for them yet.
+const SIZE_COLOR_HINT_CATEGORIES = ['clothing', 'shoes', 'luxury', 'bags']
+const QUANTITY_HINT_CATEGORIES = ['beauty', 'groceries']
 
 export default function AddEntry({ onSaved }) {
   const [form, setForm] = useState(emptyForm)
@@ -31,6 +35,7 @@ export default function AddEntry({ onSaved }) {
   const [locationStatus, setLocationStatus] = useState('locating') // locating | ok | error
   const [saving, setSaving] = useState(false)
   const [scanning, setScanning] = useState(false)
+  const [scanPhase, setScanPhase] = useState(null) // null | 'local' | 'cloud'
   const [categoryTouched, setCategoryTouched] = useState(false)
   const [currencyTouched, setCurrencyTouched] = useState(false)
   const cameraInputRef = useRef(null)
@@ -61,6 +66,13 @@ export default function AddEntry({ onSaved }) {
     }
   }, [])
 
+  // Warm the OCR worker (WASM + language data) as soon as this screen
+  // opens, instead of paying that cold-start cost when the user takes
+  // their first photo and is actually waiting on it.
+  useEffect(() => {
+    preloadOcrWorker()
+  }, [])
+
   useEffect(() => {
     if (!photoBlob) {
       setPhotoPreview(null)
@@ -84,31 +96,59 @@ export default function AddEntry({ onSaved }) {
     setCategoryTouched(false)
     setCurrencyTouched(false)
 
-    let compressed = file
-    try {
-      compressed = await compressImage(file)
-    } catch {
-      // fall back to the original file if resizing failed
-    }
+    // Stored copy and OCR copy are independent resizes of the same file —
+    // run them together instead of one after another so scanning can start
+    // as soon as the (usually similar-cost) OCR copy is ready, not after
+    // waiting for both in sequence.
+    const [compressed, ocrBlob] = await Promise.all([
+      compressImage(file).catch(() => file),
+      // OCR gets its own, sharper pass — small tag text needs more pixels
+      // than the 1024px/quality-0.7 version we store, so scanning the
+      // stored blob directly was leaving detail on the table.
+      compressImage(file, 1600, 0.9).catch(() => file),
+    ])
     setPhotoBlob(compressed)
-
-    // OCR gets its own, sharper pass — small tag text needs more pixels
-    // than the 1024px/quality-0.7 version we store, so scanning the
-    // stored blob directly was leaving detail on the table. Falls back to
-    // whatever we already have if this second compression fails.
-    let ocrBlob = compressed
-    try {
-      ocrBlob = await compressImage(file, 1600, 0.9)
-    } catch {
-      // fall back to the stored blob if the higher-res pass failed
-    }
     runScan(ocrBlob)
   }
 
   async function runScan(blob) {
     setScanning(true)
+    setScanPhase('local')
+    // Tracks whether the local pass already applied a category/currency
+    // guess, since both fields always hold a real (non-blank) value in
+    // form state — unlike brand/price, `f.category`/`f.currency` being
+    // non-empty doesn't by itself mean "already filled by a guess."
+    let localAppliedCategory = false
+    let localAppliedCurrency = false
     try {
       const hints = await scanTag(blob)
+
+      // Applied as soon as local OCR resolves — fields it found (which is
+      // most of them, most of the time) show up immediately instead of
+      // waiting on a possible cloud round-trip below for fields that were
+      // never going to change.
+      localAppliedCategory = !categoryTouched && !!hints.category
+      localAppliedCurrency = !currencyTouched && !!hints.currency
+
+      const effectiveCategory = localAppliedCategory ? hints.category : form.category
+      let descriptionHints = ''
+      if (SIZE_COLOR_HINT_CATEGORIES.includes(effectiveCategory)) {
+        descriptionHints = [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`]
+          .filter(Boolean)
+          .join(', ')
+      } else if (QUANTITY_HINT_CATEGORIES.includes(effectiveCategory) && hints.quantity) {
+        descriptionHints = `Qty: ${hints.quantity}`
+      }
+
+      setForm((f) => ({
+        ...f,
+        brand: f.brand || hints.brand,
+        price: f.price || hints.price,
+        category: localAppliedCategory ? hints.category : f.category,
+        subcategory: localAppliedCategory ? hints.subcategory : f.subcategory,
+        currency: localAppliedCurrency ? hints.currency : f.currency,
+        description: f.description || descriptionHints || f.description,
+      }))
 
       // Brand and price are the two fields local, on-device OCR struggles
       // with most — brand because it only ever matches our own curated
@@ -116,45 +156,30 @@ export default function AddEntry({ onSaved }) {
       // Escalating to a hosted vision model only when one of those is
       // still blank keeps the (photo-leaves-device) cloud call to the
       // cases that actually need it, rather than every scan.
-      let cloudHints = null
       if (!hints.brand || !hints.price) {
-        cloudHints = await cloudScanTag(blob)
+        setScanPhase('cloud')
+        const cloudHints = await cloudScanTag(blob)
+        if (cloudHints) {
+          setForm((f) => ({
+            ...f,
+            // Local wins whenever both found something — cloud only ever
+            // fills in what local OCR left blank (checked against current
+            // form state, so anything the local pass — or the user, while
+            // this was in flight — already filled stays put).
+            brand: f.brand || cloudHints.brand,
+            price: f.price || cloudHints.price,
+            category: !localAppliedCategory && !categoryTouched && cloudHints.category ? cloudHints.category : f.category,
+            subcategory:
+              !localAppliedCategory && !categoryTouched && cloudHints.category ? cloudHints.subcategory : f.subcategory,
+            currency: !localAppliedCurrency && !currencyTouched && cloudHints.currency ? cloudHints.currency : f.currency,
+          }))
+        }
       }
-
-      // Local wins over cloud whenever both found something, for every
-      // field — cloud only ever fills in what local OCR left blank.
-      const brand = hints.brand || cloudHints?.brand || ''
-      const price = hints.price || cloudHints?.price || ''
-      const currency = hints.currency || cloudHints?.currency || ''
-      const category = hints.category || cloudHints?.category || ''
-      const subcategory = hints.category ? hints.subcategory : cloudHints?.category ? cloudHints.subcategory : ''
-
-      // Same "will this actually land in the form" check the category
-      // field itself uses below, computed early so the description hint
-      // can be gated on wherever the category is actually going to end up.
-      const effectiveCategory = !categoryTouched && category ? category : form.category
-      const descriptionHints = DESCRIPTION_HINT_CATEGORIES.includes(effectiveCategory)
-        ? [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`].filter(Boolean).join(', ')
-        : ''
-
-      setForm((f) => ({
-        ...f,
-        brand: f.brand || brand,
-        price: f.price || price,
-        // Only apply the category/currency guess if the user hasn't picked
-        // one themselves yet — never override a manual choice. Currency
-        // needs its own "touched" flag rather than reusing the price's
-        // own emptiness check, since currency always has a real default
-        // value (HKD), not an empty one.
-        category: !categoryTouched && category ? category : f.category,
-        subcategory: !categoryTouched && category ? subcategory : f.subcategory,
-        currency: !currencyTouched && currency ? currency : f.currency,
-        description: f.description || descriptionHints || f.description,
-      }))
     } catch {
       // OCR is best-effort — leave fields as-is if it fails
     } finally {
       setScanning(false)
+      setScanPhase(null)
     }
   }
 
@@ -230,7 +255,7 @@ export default function AddEntry({ onSaved }) {
           id="library-input"
         />
 
-        <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed border-line bg-surface text-inkmuted">
+        <div className="relative flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed border-line bg-surface text-inkmuted">
           {photoPreview ? (
             <img src={photoPreview} alt="Captured product" className="h-full w-full object-cover" />
           ) : (
@@ -241,6 +266,21 @@ export default function AddEntry({ onSaved }) {
               </svg>
               <span className="text-sm font-medium">Add a photo of the item or tag</span>
             </>
+          )}
+          {scanning && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/60 text-surface backdrop-blur-[1px]">
+              <svg className="h-7 w-7 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-30" cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" />
+                <path
+                  className="opacity-95"
+                  fill="currentColor"
+                  d="M12 3a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6V3Z"
+                />
+              </svg>
+              <span className="px-4 text-center text-xs font-medium">
+                {scanPhase === 'cloud' ? 'Double-checking price & brand…' : 'Reading tag…'}
+              </span>
+            </div>
           )}
         </div>
 
@@ -258,8 +298,6 @@ export default function AddEntry({ onSaved }) {
             Choose from Library
           </label>
         </div>
-
-        {scanning && <p className="mt-2 text-xs text-inkmuted">Scanning…</p>}
       </div>
 
       <div className="flex items-center gap-2 text-xs">

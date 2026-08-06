@@ -80,27 +80,45 @@ const EXTRA_KEYWORDS = {
   },
 }
 
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// Precomputed once at module load, same reasoning as ocr.js's KNOWN_BRANDS:
+// building each keyword's regex here rather than per guessCategory() call
+// keeps the hot path (a substring/boundary test per candidate) cheap.
+const CATEGORY_KEYWORDS = CATEGORIES.flatMap((cat) => {
+  const keywordMap = EXTRA_KEYWORDS[cat.value] || {}
+  const candidates = [
+    ...(cat.subcategories || []).map((s) => [s.toLowerCase(), s]),
+    ...Object.entries(keywordMap),
+  ]
+  return candidates
+    .filter(([keyword]) => keyword.length >= 3)
+    .map(([keyword, subcategory]) => ({
+      category: cat.value,
+      subcategory,
+      matchLength: keyword.length,
+      // Word-boundary anchored — a plain substring test matched "tee"
+      // (clothing's "Tops" keyword) inside "ESTEE" (Estée Lauder,
+      // misread without its accent), silently mis-categorizing a beauty
+      // product as clothing. Same failure mode ocr.js's brand matcher
+      // already guards against for brand names; category keywords needed
+      // the same discipline.
+      regex: new RegExp(`\\b${escapeRegExp(keyword)}\\b`, 'i'),
+    }))
+})
+
 // Returns { category, subcategory } for the longest keyword match found in
 // the text (longer matches are treated as more specific/confident), or null
 // if nothing matched. This is a hint to prefill the form with, not a
 // classification the user can't override.
 export function guessCategory(text) {
-  const lower = text.toLowerCase()
   let best = null
 
-  for (const cat of CATEGORIES) {
-    const keywordMap = EXTRA_KEYWORDS[cat.value] || {}
-    const candidates = [
-      ...(cat.subcategories || []).map((s) => [s.toLowerCase(), s]),
-      ...Object.entries(keywordMap),
-    ]
-    for (const [keyword, subcategory] of candidates) {
-      if (keyword.length < 3) continue
-      if (lower.includes(keyword)) {
-        if (!best || keyword.length > best.matchLength) {
-          best = { category: cat.value, subcategory, matchLength: keyword.length }
-        }
-      }
+  for (const { category, subcategory, matchLength, regex } of CATEGORY_KEYWORDS) {
+    if (regex.test(text) && (!best || matchLength > best.matchLength)) {
+      best = { category, subcategory, matchLength }
     }
   }
 
