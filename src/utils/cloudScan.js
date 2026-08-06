@@ -4,65 +4,55 @@
 // comments). Unlike scanTag() in ocr.js, this sends the photo to a
 // serverless relay (api/scan-tag.js), which is the one path in the app
 // where a photo leaves the device.
+//
+// cloudScanTag() expects the blob it's given to already be scan-resolution
+// (AddEntry.jsx passes the same ~1600px/0.9 JPEG it hands to local OCR) —
+// there's no separate downscale step here anymore, since resizing it again
+// to the same target would just be a wasted decode/re-encode.
 import { CATEGORY_OPTIONS, subcategoriesFor } from './grouping.js'
 import { CURRENCIES } from './currency.js'
 
-// A separate, smaller copy of the photo than the one that gets stored —
-// tag text stays legible well below the stored resolution, and image size
-// is the main lever on cloud call cost.
-const MAX_DIMENSION = 768
-const JPEG_QUALITY = 0.7
-
-function downscaleForCloud(blob) {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    const objectUrl = URL.createObjectURL(blob)
-    img.onload = () => {
-      try {
-        let { width, height } = img
-        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-          if (width >= height) {
-            height = Math.round((height * MAX_DIMENSION) / width)
-            width = MAX_DIMENSION
-          } else {
-            width = Math.round((width * MAX_DIMENSION) / height)
-            height = MAX_DIMENSION
-          }
-        }
-        const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
-        URL.revokeObjectURL(objectUrl)
-        canvas.toBlob(
-          (out) => (out ? resolve(out) : reject(new Error('Could not downscale photo.'))),
-          'image/jpeg',
-          JPEG_QUALITY
-        )
-      } catch (err) {
-        URL.revokeObjectURL(objectUrl)
-        reject(err)
-      }
-    }
-    img.onerror = () => {
-      URL.revokeObjectURL(objectUrl)
-      reject(new Error('Could not read that photo.'))
-    }
-    img.src = objectUrl
-  })
+// The prompt (api/scan-tag.js) asks Gemini for one of our ISO currency
+// codes, but nothing enforces that — it sometimes echoes the symbol
+// actually printed on the tag instead (e.g. "HK$" rather than "HKD").
+// Mirrors the symbol -> code mapping local OCR's own CURRENCY_MARKERS
+// already trusts (ocr.js), so a technically-out-of-spec but unambiguous
+// response still counts instead of being discarded outright by the plain
+// enum check below.
+const CURRENCY_ALIASES = {
+  'HK$': 'HKD',
+  'US$': 'USD',
+  'NT$': 'TWD',
+  'NZ$': 'NZD',
+  'S$': 'SGD',
+  'C$': 'CAD',
+  'A$': 'AUD',
+  '¥': 'JPY',
+  '₩': 'KRW',
+  '฿': 'THB',
+  '£': 'GBP',
+  '€': 'EUR',
+  RMB: 'CNY',
 }
 
-// Category/subcategory/currency are supposed to be constrained to our own
-// enums by the prompt (see api/scan-tag.js), but nothing guarantees a
-// model actually stays inside them — an unrecognized value written
-// straight into form state would silently desync the <select> from what's
-// displayed. Validating here keeps cloudScanTag()'s contract the same as
-// local scanTag(): a valid enum value, or empty.
+function normalizeCurrency(value) {
+  if (typeof value !== 'string') return ''
+  const trimmed = value.trim()
+  if (CURRENCIES.includes(trimmed)) return trimmed
+  return CURRENCY_ALIASES[trimmed] || ''
+}
+
+// Category/subcategory are also supposed to be constrained to our own
+// enums by the prompt, but nothing guarantees a model actually stays
+// inside them — an unrecognized value written straight into form state
+// would silently desync the <select> from what's displayed. Validating
+// here keeps cloudScanTag()'s contract the same as local scanTag(): a
+// valid enum value, or empty.
 function sanitizeHints(data) {
   const category = CATEGORY_OPTIONS.includes(data.category) ? data.category : ''
   const validSubcategories = category ? subcategoriesFor(category) : []
   const subcategory = validSubcategories.includes(data.subcategory) ? data.subcategory : ''
-  const currency = CURRENCIES.includes(data.currency) ? data.currency : ''
+  const currency = normalizeCurrency(data.currency)
   return {
     brand: typeof data.brand === 'string' ? data.brand : '',
     price: typeof data.price === 'string' ? data.price : '',
@@ -93,8 +83,7 @@ function blobToBase64(blob) {
 // escalation just means the caller falls back to whatever local OCR found.
 export async function cloudScanTag(blob) {
   try {
-    const smaller = await downscaleForCloud(blob)
-    const base64 = await blobToBase64(smaller)
+    const base64 = await blobToBase64(blob)
     if (!base64) return null
 
     const res = await fetch('/api/scan-tag', {

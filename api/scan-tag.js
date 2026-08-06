@@ -13,9 +13,9 @@ import { Redis } from '@upstash/redis'
 import { CATEGORIES } from '../src/utils/grouping.js'
 import { CURRENCIES } from '../src/utils/currency.js'
 
-// Generous ceiling for a 768px JPEG (see cloudScan.js) - blocks someone
+// Generous ceiling for a 1600px JPEG (see cloudScan.js) - blocks someone
 // from posting an oversized payload to inflate token cost per call.
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024
 
 // Per-IP throttle against the endpoint being hammered directly (the app
 // itself has no login, so this is public-facing). Separate from the daily
