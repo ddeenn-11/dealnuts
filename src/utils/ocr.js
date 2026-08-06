@@ -83,70 +83,105 @@ const SIZE_NUMBER_TOKEN = new RegExp(
 // truncate those to their first 3 digits.
 const AMOUNT = '(?:[0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)(?:\\.[0-9]{2})?'
 
+// Maps a currency marker to our supported ISO codes. Checked
+// most-unambiguous-first: an explicit printed code ("USD") or a
+// letter-prefixed dollar sign ("HK$") is unambiguous, so those win over a
+// bare symbol. ¥ and a bare $ are inherently ambiguous — ¥ could be JPY or
+// CNY, $ could be any of several dollar-currencies — so each falls back to
+// one fixed default (JPY and HKD respectively) rather than guessing
+// between options; it's a prefilled dropdown either way, one tap to
+// correct. R$ (Brazilian Real) is accepted as a price prefix below but has
+// no mapping here since BRL isn't one of our 14 supported currencies.
+function symbolToCurrency(marker) {
+  switch (marker) {
+    case 'US$':
+      return 'USD'
+    case 'HK$':
+      return 'HKD'
+    case 'NT$':
+      return 'TWD'
+    case 'NZ$':
+      return 'NZD'
+    case 'S$':
+      return 'SGD'
+    case 'C$':
+      return 'CAD'
+    case 'A$':
+      return 'AUD'
+    case '₩':
+      return 'KRW'
+    case '฿':
+      return 'THB'
+    case '£':
+      return 'GBP'
+    case '€':
+      return 'EUR'
+    case '¥':
+      return 'JPY'
+    case '$':
+      return 'HKD'
+    default:
+      return ''
+  }
+}
+
+const CURRENCY_CODE_SET = new Set(CURRENCY_CODES.split('|'))
+
+function codeToCurrency(code) {
+  const upper = code.toUpperCase()
+  if (upper === 'RMB') return 'CNY'
+  return CURRENCY_CODE_SET.has(upper) ? upper : ''
+}
+
 // Ordered most-specific-first: an explicit currency mark wins over a bare
 // decimal number, since tags often print a second unrelated decimal (a SKU
 // fragment, a size like "10.5") that isn't the price. Decimals are
 // optional throughout — plenty of real tags print whole-number prices
 // ("HK$1,080") with no cents.
-const PRICE_PATTERNS = [
-  new RegExp(`(?:US\\$|HK\\$|R\\$|C\\$|A\\$|NT\\$|NZ\\$|S\\$|\\$|£|€|¥|₩|฿)\\s?(${AMOUNT})`), // $12.99, HK$1,299, ¥15000
-  new RegExp(`\\bS\\s?(${AMOUNT})\\b`), // OCR often misreads "$" as "S"
-  new RegExp(`\\b(?:${CURRENCY_CODES})\\s?(${AMOUNT})\\b`, 'i'), // "THB 590", "KRW 15,000" — code before amount
-  new RegExp(`\\b(${AMOUNT})\\s?(?:${CURRENCY_CODES})\\b`, 'i'), // "29.99 USD" — amount before code
-  /\b([0-9]{1,3}(?:,[0-9]{3})*\.[0-9]{2})\b/, // bare decimal fallback — requires exactly 2 decimals (no currency marker anywhere else), so it won't grab a "9.5" size or a bare SKU number
-]
+//
+// Price and currency are read together, off the same match, rather than
+// as two independent scans of the whole text. They used to be separate:
+// guessPrice() found the amount, and a standalone guessCurrency() scanned
+// the entire OCR'd text for any currency symbol/code, anywhere. On a busy
+// tag, Tesseract can hallucinate a single stray symbol out of unrelated
+// image noise (a logo, an icon) — and that alone was enough to make a
+// whole-document scan report the wrong currency even when an actual,
+// legible "$" sat right next to the price on the same line. Anchoring
+// currency to whichever match found the price closes that off: a
+// document-wide scan can no longer outrank the marker actually attached
+// to the number being used.
+function guessPriceAndCurrency(text) {
+  let m = text.match(new RegExp(`(US\\$|HK\\$|R\\$|C\\$|A\\$|NT\\$|NZ\\$|S\\$|\\$|£|€|¥|₩|฿)\\s?(${AMOUNT})`)) // $12.99, HK$1,299, ¥15000
+  if (m) return { price: m[2].replace(/,/g, ''), currency: symbolToCurrency(m[1]) }
 
-function guessPrice(text) {
-  for (const pattern of PRICE_PATTERNS) {
-    const match = text.match(pattern)
-    if (match) return match[1].replace(/,/g, '')
-  }
-  return ''
+  m = text.match(new RegExp(`\\b(S)\\s?(${AMOUNT})\\b`)) // OCR often misreads "$" as "S"
+  if (m) return { price: m[2].replace(/,/g, ''), currency: 'HKD' }
+
+  m = text.match(new RegExp(`\\b(${CURRENCY_CODES})\\s?(${AMOUNT})\\b`, 'i')) // "THB 590", "KRW 15,000" — code before amount
+  if (m) return { price: m[2].replace(/,/g, ''), currency: codeToCurrency(m[1]) }
+
+  m = text.match(new RegExp(`\\b(${AMOUNT})\\s?(${CURRENCY_CODES})\\b`, 'i')) // "29.99 USD" — amount before code
+  if (m) return { price: m[1].replace(/,/g, ''), currency: codeToCurrency(m[2]) }
+
+  // Bare decimal fallback — requires exactly 2 decimals (no currency
+  // marker attached), so it won't grab a "9.5" size or a bare SKU number.
+  // No marker means no currency signal from this match.
+  m = text.match(/\b([0-9]{1,3}(?:,[0-9]{3})*\.[0-9]{2})\b/)
+  if (m) return { price: m[1].replace(/,/g, ''), currency: '' }
+
+  return { price: '', currency: '' }
 }
 
-// Maps whatever currency mark shows up in the tag text to one of our 14
-// supported ISO codes. Checked most-unambiguous-first: an explicit printed
-// code ("USD") or a letter-prefixed dollar sign ("HK$") is unambiguous, so
-// those win over a bare symbol. ¥ and a bare $ are inherently ambiguous —
-// ¥ could be JPY or CNY, $ could be any of several dollar-currencies — so
-// each falls back to one fixed default (JPY and HKD respectively) rather
-// than guessing between options; it's a prefilled dropdown either way, one
-// tap to correct.
-const CURRENCY_MARKERS = [
-  [/\bUSD\b/i, 'USD'],
-  [/\bHKD\b/i, 'HKD'],
-  [/\bCAD\b/i, 'CAD'],
-  [/\bAUD\b/i, 'AUD'],
-  [/\bGBP\b/i, 'GBP'],
-  [/\bEUR\b/i, 'EUR'],
-  [/\bCHF\b/i, 'CHF'],
-  [/\bJPY\b/i, 'JPY'],
-  [/\bKRW\b/i, 'KRW'],
-  [/\bTWD\b/i, 'TWD'],
-  [/\bTHB\b/i, 'THB'],
-  [/\bSGD\b/i, 'SGD'],
-  [/\bNZD\b/i, 'NZD'],
-  [/\b(?:CNY|RMB)\b/i, 'CNY'],
-  [/US\$/, 'USD'],
-  [/HK\$/, 'HKD'],
-  [/NT\$/, 'TWD'],
-  [/NZ\$/, 'NZD'],
-  [/\bS\$/, 'SGD'],
-  [/\bC\$/, 'CAD'],
-  [/\bA\$/, 'AUD'],
-  [/₩/, 'KRW'],
-  [/฿/, 'THB'],
-  [/£/, 'GBP'],
-  [/€/, 'EUR'],
-  [/¥/, 'JPY'], // ambiguous with CNY — defaults to JPY
-  [/\$/, 'HKD'], // ambiguous across several dollar-currencies — defaults to HKD
-]
-
-function guessCurrency(text) {
-  for (const [pattern, iso] of CURRENCY_MARKERS) {
-    if (pattern.test(text)) return iso
-  }
-  return ''
+// Last resort, only when the price match above carried no currency marker
+// of its own (or no price was found at all): the tag might still print a
+// standalone currency code separately from the amount ("Price in THB").
+// Deliberately code-only, never symbol-only — a specific 3-letter
+// uppercase word is far less likely to be an OCR hallucination than a
+// single stray symbol character, which is exactly what a full-text symbol
+// scan got wrong above.
+function guessStandaloneCurrencyCode(text) {
+  const match = text.match(new RegExp(`\\b(${CURRENCY_CODES})\\b`, 'i'))
+  return match ? codeToCurrency(match[1]) : ''
 }
 
 // A bare number is a weak, easily-confused signal (list markers, barcode
@@ -178,10 +213,15 @@ function guessSize(text) {
 // tags print a physical quantity, not a garment size. Unit-anchored (the
 // number must be directly followed by a known unit word), so this doesn't
 // compete with price or size parsing, which never have a unit suffix like
-// this. "fl oz" is checked before the bare "oz"/"l" units so a fluid-ounce
-// or liter reading isn't cut short by the shorter alternative matching
-// first.
-const QUANTITY_PATTERN = /\b([0-9]+(?:\.[0-9]+)?)\s?(fl\s?\.?\s?oz|floz|ml|l|kg|g|lbs?|oz)\b|\b([0-9]+)[\s-]?(pack|pcs|ct|count)\b/i
+// this. Covers the standard retail volume units (ml, cl, dl, l, fl oz, pt,
+// gal) and weight units (mg, g, kg, oz, lb). The trailing \b on the whole
+// unit group is what actually keeps single-letter units safe against
+// their own longer relatives sharing a first character (e.g. "5gal" can't
+// wrongly match bare "g" — that'd need a boundary right after the "g", but
+// "a" follows it — so it falls through to "gal" instead); listing longer
+// forms first is just for readability, not correctness.
+const QUANTITY_PATTERN =
+  /\b([0-9]+(?:\.[0-9]+)?)\s?(fl\s?\.?\s?oz|floz|ml|cl|dl|l|kg|mg|g|lbs?|oz|pt|gal)\b|\b([0-9]+)[\s-]?(pack|pcs|ct|count)\b/i
 
 function guessQuantity(text) {
   const match = text.match(QUANTITY_PATTERN)
@@ -277,10 +317,13 @@ export async function scanTag(blob) {
     }
   }
 
+  const { price, currency: anchoredCurrency } = guessPriceAndCurrency(text)
+  const currency = anchoredCurrency || guessStandaloneCurrencyCode(text)
+
   return {
     brand,
-    price: guessPrice(text),
-    currency: guessCurrency(text),
+    price,
+    currency,
     size,
     quantity,
     category: categoryHint?.category || '',

@@ -130,7 +130,15 @@ export default function AddEntry({ onSaved }) {
       localAppliedCategory = !categoryTouched && !!hints.category
       localAppliedCurrency = !currencyTouched && !!hints.currency
 
-      const effectiveCategory = localAppliedCategory ? hints.category : form.category
+      // `form.category` is only a meaningful signal here if the user
+      // actually chose it (categoryTouched) — otherwise it's just sitting
+      // at the form's arbitrary default ('clothing'), which is not
+      // evidence this item is clothing. Falling back to it unconditionally
+      // used to make an untouched default look identical to a real
+      // Clothing detection, routing items OCR couldn't categorize at all
+      // (no keyword match, no recognized brand) into the Color/Size
+      // description branch instead of leaving description alone.
+      const effectiveCategory = localAppliedCategory ? hints.category : categoryTouched ? form.category : ''
       let descriptionHints = ''
       if (SIZE_COLOR_HINT_CATEGORIES.includes(effectiveCategory)) {
         descriptionHints = [hints.color && `Color: ${hints.color}`, hints.size && `Size ${hints.size}`]

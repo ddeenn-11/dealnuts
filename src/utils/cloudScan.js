@@ -15,7 +15,7 @@ import { CURRENCIES } from './currency.js'
 // The prompt (api/scan-tag.js) asks Gemini for one of our ISO currency
 // codes, but nothing enforces that — it sometimes echoes the symbol
 // actually printed on the tag instead (e.g. "HK$" rather than "HKD").
-// Mirrors the symbol -> code mapping local OCR's own CURRENCY_MARKERS
+// Mirrors the symbol -> code mapping local OCR's own symbolToCurrency()
 // already trusts (ocr.js), so a technically-out-of-spec but unambiguous
 // response still counts instead of being discarded outright by the plain
 // enum check below.
