@@ -64,7 +64,7 @@ Primarily a client-only web app — everything (photos, records) stays on-device
   - **Delete** button (enabled when one or more checked) bulk-deletes after one confirmation
   - Selecting 2+ shows a floating **"Compare N finds"** button — the only way to start a comparison
 - Search across brand, category, subcategory, location, store #, and description
-- **Export** — downloads all entries + photos as a single JSON backup file (the safety net for local-only storage — see §6)
+- **Export** — downloads a human-readable spreadsheet (`.xlsx`, via `src/utils/export.js`) of all entries (a "Finds" sheet) and manual groups (a "Groups" sheet, if any exist). Deliberately excludes photos — see §6 for what this means for backup coverage.
 
 **C. Compare**
 - Selection happens exclusively in Finds
@@ -165,8 +165,10 @@ Group {
 <assumption>Local-only storage (IndexedDB) means data is tied to one device/browser. Closing the app, restarting the phone, etc. does not lose data — but a few things genuinely can:</assumption>
 
 - Manually clearing browser/site data, or using Private/Incognito mode
-- **iOS Safari's 7-day script-writable-storage eviction** — if the site isn't visited for 7 days, Safari can silently wipe IndexedDB. **Mitigation:** "Add to Home Screen" exempts a site from this eviction policy; the in-app **Export** button is the fallback backup for anyone who doesn't do that.
+- **iOS Safari's 7-day script-writable-storage eviction** — if the site isn't visited for 7 days, Safari can silently wipe IndexedDB. **Mitigation:** "Add to Home Screen" exempts a site from this eviction policy.
 - Switching phones or reinstalling the browser (data doesn't transfer — there's no account/sync)
+
+**Export is no longer a full backup (changed since the original MVP draft).** It used to be a JSON dump of every field, photos included as embedded base64 — a genuine restore path, but effectively unreadable as a document (a wall of base64 text per entry). It's now a human-readable `.xlsx` spreadsheet, which was the point — but spreadsheet cells aren't a reasonable place for embedded image data, so **photos are excluded entirely**. There is currently no way to recover photos if local storage is lost; Export only preserves the text fields (brand, price, location, description, etc.). Worth deciding whether a separate, explicit photo-backup path (e.g. a zip of images) is worth adding later — see §7.
 
 **Privacy note (updated):** photos no longer *always* stay on-device. When local OCR can't find a brand or price, a copy of the photo (the same ~1600px/0.9 resolution local OCR itself used, not a separately smaller one) is sent to Gemini via the app's own serverless relay for that one scan. This isn't currently surfaced to the user beyond the scan status overlay's "Double-checking price & brand…" text — see open question below.
 
@@ -184,6 +186,7 @@ Group {
 - **`BRAND_CATEGORIES` (244 brands) has no UI yet.** Built for a future brand picker/autocomplete on the Brand field; whatever UI gets built on top of it must still allow free-text entry for brands not in the list, since no curated list this size will ever be complete.
 - Should the OCR-guessed category/subcategory and any cloud-sourced fields ever be shown to the user as "confidence" hints (vs. silently prefilling)?
 - Should there be a limit or archive/cleanup mechanism for old entries? — Still open; not built.
+- **Photos have no backup path at all now that Export excludes them** (see §6). Worth deciding whether that's an acceptable tradeoff for readability, or whether a separate photo-backup mechanism (e.g. a downloadable zip) should be added later.
 
 ---
 
@@ -221,3 +224,4 @@ Group {
 30. Cloud currency responses normalized from common symbol forms ("HK$", "¥", "RMB", etc.) to their ISO code instead of being discarded when they don't exactly match the enum
 31. Currency detection reworked to read off the same match that found the price, instead of an independent whole-document symbol scan — closes a bug where a single OCR-hallucinated stray symbol elsewhere on a busy tag could report the wrong currency despite a legible, correct price marker being present
 32. Fixed a bug where an entry OCR couldn't categorize at all (no keyword match, no unambiguous brand) had its description auto-filled with bogus Color/Size text, because the form's own untouched default category value was being mistaken for a real detection
+33. **Export changed from a JSON backup (all fields, photos embedded as base64) to a human-readable `.xlsx` spreadsheet** (`src/utils/export.js`, via the `xlsx` library) — a "Finds" sheet plus a "Groups" sheet when manual groups exist. Photos are deliberately excluded (no reasonable way to put embedded images in spreadsheet cells), which means Export is no longer a full-data backup — see §6

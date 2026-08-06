@@ -117,29 +117,3 @@ export async function deleteGroup(groupId) {
   await db.delete(GROUP_STORE, groupId)
 }
 
-// ---------- Export (manual backup, since storage is local-only) ----------
-
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result)
-    reader.onerror = reject
-    reader.readAsDataURL(blob)
-  })
-}
-
-export async function exportAllAsJson() {
-  const db = await getDb()
-  const entries = await db.getAll(ENTRY_STORE)
-  const groups = await db.getAll(GROUP_STORE)
-  const entriesWithPhotos = await Promise.all(
-    entries.map(async (e) => {
-      if (e.photo instanceof Blob) {
-        const base64 = await blobToBase64(e.photo)
-        return { ...e, photo: base64 }
-      }
-      return e
-    })
-  )
-  return JSON.stringify({ exportedAt: Date.now(), entries: entriesWithPhotos, groups }, null, 2)
-}

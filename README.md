@@ -49,11 +49,12 @@ below to test the full experience on your phone.
 
 ```
 src/
-  db.js              IndexedDB storage (entries + manual groups + export)
+  db.js              IndexedDB storage (entries + manual groups)
   utils/
     geolocation.js    GPS capture + free reverse geocoding (OpenStreetMap)
     image.js          Client-side photo resize/compression before saving
     grouping.js        Auto-grouping (category + brand) + formatting helpers
+    export.js           Builds the human-readable .xlsx export
   components/
     TabBar.jsx          Bottom navigation
     EntryCard.jsx        The reusable "price tag" card used throughout
@@ -74,9 +75,11 @@ src/
 - Reverse geocoding (turning GPS coordinates into a store name) uses the
   free OpenStreetMap Nominatim API on a best-effort basis. If it doesn't
   resolve a name, you can just type the store name in yourself.
-- Data lives only in your browser. Use the **Export** button on the Finds
-  screen periodically to download a JSON backup — clearing your browser
-  data or switching devices will otherwise lose everything.
+- Data lives only in your browser. The **Export** button on the Finds
+  screen downloads a human-readable spreadsheet (`.xlsx`) of all your
+  finds — but it doesn't include photos, so it's a readable summary, not
+  a full backup. Clearing your browser data or switching devices loses
+  everything, photos included, with no way to recover them.
 
 ## What's next (not built yet)
 

@@ -6,10 +6,10 @@ import {
   createGroup,
   addEntryToGroup,
   removeEntryFromGroup,
-  exportAllAsJson,
   deleteEntry,
 } from '../db.js'
 import { autoGroupEntries } from '../utils/grouping.js'
+import { exportEntriesAsXlsx } from '../utils/export.js'
 
 export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
   const [entries, setEntries] = useState([])
@@ -80,13 +80,12 @@ export default function Browse({ refreshKey, onOpenEntry, onCompareSelected }) {
     clearSelection()
   }
 
-  async function handleExport() {
-    const json = await exportAllAsJson()
-    const blob = new Blob([json], { type: 'application/json' })
+  function handleExport() {
+    const blob = exportEntriesAsXlsx(entries, groups)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `buyright-backup-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `buyright-finds-${new Date().toISOString().slice(0, 10)}.xlsx`
     document.body.appendChild(a)
     a.click()
     a.remove()
