@@ -286,7 +286,7 @@ export default function AddEntry({ onSaved }) {
                 />
               </svg>
               <span className="px-4 text-center text-xs font-medium">
-                {scanPhase === 'cloud' ? 'Double-checking price & brand…' : 'Reading tag…'}
+                {scanPhase === 'cloud' ? 'Scanning…' : 'Reading tag…'}
               </span>
             </div>
           )}
